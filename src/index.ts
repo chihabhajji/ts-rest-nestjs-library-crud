@@ -5,3 +5,4 @@ export * from './lib/abstract';
 export * from './lib/interceptor';
 export * from './lib/provider';
 export * from './lib/constants';
+export * from './lib/contract';

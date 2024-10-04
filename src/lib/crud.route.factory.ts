@@ -85,6 +85,7 @@ export class CrudRouteFactory {
 
     init(): void {
         for (const method of Object.values(Method)) {
+            console.log(method);
             if (!this.enabledMethod(method)) {
                 continue;
             }
@@ -136,7 +137,7 @@ export class CrudRouteFactory {
         return this.entity.tableName;
     }
 
-    protected get targetPrototype(): any {
+    protected get targetPrototype() {
         return this.target.prototype;
     }
 

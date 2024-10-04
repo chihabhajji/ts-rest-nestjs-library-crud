@@ -42,7 +42,7 @@ export function ReadManyRequestInterceptor(crudOptions: CrudOptions, factoryOpti
 
             const withDeleted = _.isBoolean(customReadManyRequestOptions?.softDeleted)
                 ? customReadManyRequestOptions.softDeleted
-                : crudOptions.routes?.[method]?.softDelete ?? CRUD_POLICY[method].default.softDeleted;
+                : (crudOptions.routes?.[method]?.softDelete ?? CRUD_POLICY[method].default.softDeleted);
 
             const query = await (async () => {
                 if (PaginationHelper.isNextPage(pagination)) {
@@ -57,7 +57,7 @@ export function ReadManyRequestInterceptor(crudOptions: CrudOptions, factoryOpti
             })();
             const paginationKeys = readManyOptions.paginationKeys ?? factoryOption.primaryKeys.map(({ name }) => name);
             const numberOfTake =
-                (pagination.type === 'cursor' ? readManyOptions.numberOfTake : pagination.limit ?? readManyOptions.numberOfTake) ??
+                (pagination.type === 'cursor' ? readManyOptions.numberOfTake : (pagination.limit ?? readManyOptions.numberOfTake)) ??
                 CRUD_POLICY[method].default.numberOfTake;
             const sort = readManyOptions.sort ? Sort[readManyOptions.sort] : CRUD_POLICY[method].default.sort;
 
@@ -142,4 +142,121 @@ export function ReadManyRequestInterceptor(crudOptions: CrudOptions, factoryOpti
     }
 
     return mixin(MixinInterceptor);
+}
+
+function deserialize<T>({ pagination, findOptions, sort }: CrudReadManyRequest<T>): FindOptionsWhere<T> {
+    if (pagination.type === PaginationType.OFFSET) {
+        return PaginationHelper.deserialize(pagination.where);
+    }
+    const query: Record<string, unknown> = PaginationHelper.deserialize(pagination.where);
+    const lastObject: Record<string, unknown> = PaginationHelper.deserialize(pagination.nextCursor);
+
+    const operator = (key: keyof T) => ((findOptions.order?.[key] ?? sort) === Sort.DESC ? LessThan : MoreThan);
+
+    for (const [key, value] of Object.entries(lastObject)) {
+        query[key] = operator(key as keyof T)(value);
+    }
+    return query as FindOptionsWhere<T>;
+}
+async function validateQuery<T>(query: Record<string, unknown>, entity: T) {
+    if (_.isNil(query)) {
+        return {};
+    }
+
+    if ('limit' in query) {
+        delete query.limit;
+    }
+    if ('offset' in query) {
+        delete query.offset;
+    }
+    if ('nextCursor' in query) {
+        delete query.nextCursor;
+    }
+
+    const transformed = plainToInstance(entity as ClassConstructor<EntityType>, query, {
+        groups: [GROUP.READ_MANY],
+    });
+    const errorList = await validate(transformed, {
+        groups: [GROUP.READ_MANY],
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        stopAtFirstError: true,
+        forbidUnknownValues: false,
+    });
+
+    if (errorList.length > 0) {
+        throw new UnprocessableEntityException(errorList);
+    }
+    return transformed;
+}
+
+function getRelations(
+    customReadManyRequestOptions: CustomReadManyRequestOptions,
+    crudOptions: CrudOptions,
+    factoryOption: FactoryOption,
+): string[] {
+    if (Array.isArray(customReadManyRequestOptions?.relations)) {
+        return customReadManyRequestOptions.relations;
+    }
+    if (crudOptions.routes?.[method]?.relations === false) {
+        return [];
+    }
+    if (crudOptions.routes?.[method] && Array.isArray(crudOptions.routes?.[method]?.relations)) {
+        return crudOptions.routes[method].relations;
+    }
+    return factoryOption.relations;
+}
+
+export async function doStuff<T extends EntityType>(
+    req: Record<string, any>,
+    crudOptions: CrudOptions,
+    factoryOption: FactoryOption,
+): Promise<CrudReadManyRequest<T>> {
+    const readManyOptions = crudOptions.routes?.[method] ?? {};
+
+    const customReadManyRequestOptions: CustomReadManyRequestOptions = req[CUSTOM_REQUEST_OPTIONS];
+    const paginationType = (readManyOptions.paginationType ?? CRUD_POLICY[method].default.paginationType) as PaginationType;
+
+    if (Object.keys(req.params ?? {}).length > 0) {
+        Object.assign(req.query, req.params);
+    }
+
+    const pagination = PaginationHelper.getPaginationRequest(paginationType, req.query);
+
+    const withDeleted = _.isBoolean(customReadManyRequestOptions?.softDeleted)
+        ? customReadManyRequestOptions.softDeleted
+        : (crudOptions.routes?.[method]?.softDelete ?? CRUD_POLICY[method].default.softDeleted);
+
+    const query = await (async () => {
+        if (PaginationHelper.isNextPage(pagination)) {
+            const isQueryValid = pagination.setQuery(pagination.query);
+            if (isQueryValid) {
+                return {};
+            }
+        }
+        const query = await validateQuery(req.query, crudOptions.entity);
+        pagination.setWhere(PaginationHelper.serialize(query));
+        return query;
+    })();
+    const paginationKeys = readManyOptions.paginationKeys ?? factoryOption.primaryKeys.map(({ name }) => name);
+    const numberOfTake =
+        (pagination.type === 'cursor' ? readManyOptions.numberOfTake : (pagination.limit ?? readManyOptions.numberOfTake)) ??
+        CRUD_POLICY[method].default.numberOfTake;
+    const sort = readManyOptions.sort ? Sort[readManyOptions.sort] : CRUD_POLICY[method].default.sort;
+
+    const crudReadManyRequest: CrudReadManyRequest<T> = new CrudReadManyRequest<T>()
+        .setPaginationKeys(paginationKeys)
+        .setExcludeColumn(readManyOptions.exclude)
+        .setPagination(pagination)
+        .setWithDeleted(withDeleted)
+        .setWhere(query as FindOptionsWhere<T> & Partial<T>)
+        .setTake(numberOfTake)
+        .setSort(sort)
+        .setRelations(getRelations(customReadManyRequestOptions, crudOptions, factoryOption))
+        .setDeserialize(deserialize)
+        .generate();
+
+    req[CRUD_ROUTE_ARGS] = crudReadManyRequest;
+
+    return crudReadManyRequest;
 }

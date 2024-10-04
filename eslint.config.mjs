@@ -82,7 +82,7 @@ export default [
                     selector: 'default',
                     format: ['camelCase', 'PascalCase', 'snake_case', 'UPPER_CASE'],
                     filter: {
-                        regex: '^_.*$',
+                        regex: '^_.*$|\\d+',
                         match: false,
                     },
                 },
