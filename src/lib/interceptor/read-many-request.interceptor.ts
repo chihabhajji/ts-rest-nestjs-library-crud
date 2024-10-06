@@ -12,7 +12,7 @@ import { PaginationHelper } from '../provider';
 import { CrudReadManyRequest } from '../request';
 
 import type { CustomReadManyRequestOptions } from './custom-request.interceptor';
-import type { CrudOptions, FactoryOption, EntityType } from '../interface';
+import type { CrudOptions, FactoryOption, EntityType, ReadManyRouteOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { ClassConstructor } from 'class-transformer';
 import type { Request } from 'express';
@@ -29,16 +29,15 @@ export function ReadManyRequestInterceptor(crudOptions: CrudOptions, factoryOpti
         async intercept(context: ExecutionContext, next: CallHandler<unknown>): Promise<Observable<unknown>> {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const req: Record<string, any> = context.switchToHttp().getRequest<Request>();
-            const readManyOptions = crudOptions.routes?.[method] ?? {};
+            const readManyOptions: Omit<ReadManyRouteOption, 'path' | 'responses' | 'method'> = crudOptions.routes?.[method] ?? {};
 
             const customReadManyRequestOptions: CustomReadManyRequestOptions = req[CUSTOM_REQUEST_OPTIONS];
-            const paginationType = (readManyOptions.paginationType ?? CRUD_POLICY[method].default.paginationType) as PaginationType;
 
             if (Object.keys(req.params ?? {}).length > 0) {
                 Object.assign(req.query, req.params);
             }
 
-            const pagination = PaginationHelper.getPaginationRequest(paginationType, req.query);
+            const pagination = PaginationHelper.getPaginationRequest(req.query);
 
             const withDeleted = _.isBoolean(customReadManyRequestOptions?.softDeleted)
                 ? customReadManyRequestOptions.softDeleted
@@ -56,9 +55,7 @@ export function ReadManyRequestInterceptor(crudOptions: CrudOptions, factoryOpti
                 return query;
             })();
             const paginationKeys = readManyOptions.paginationKeys ?? factoryOption.primaryKeys.map(({ name }) => name);
-            const numberOfTake =
-                (pagination.type === 'cursor' ? readManyOptions.numberOfTake : (pagination.limit ?? readManyOptions.numberOfTake)) ??
-                CRUD_POLICY[method].default.numberOfTake;
+            const numberOfTake = pagination.limit ?? readManyOptions.numberOfTake ?? CRUD_POLICY[method].default.numberOfTake;
             const sort = readManyOptions.sort ? Sort[readManyOptions.sort] : CRUD_POLICY[method].default.sort;
 
             const crudReadManyRequest: CrudReadManyRequest<typeof crudOptions.entity> = new CrudReadManyRequest<typeof crudOptions.entity>()
@@ -212,16 +209,15 @@ export async function doStuff<T extends EntityType>(
     crudOptions: CrudOptions,
     factoryOption: FactoryOption,
 ): Promise<CrudReadManyRequest<T>> {
-    const readManyOptions = crudOptions.routes?.[method] ?? {};
+    const readManyOptions: Omit<ReadManyRouteOption, 'path' | 'responses' | 'method'> = crudOptions.routes?.[method] ?? {};
 
     const customReadManyRequestOptions: CustomReadManyRequestOptions = req[CUSTOM_REQUEST_OPTIONS];
-    const paginationType = (readManyOptions.paginationType ?? CRUD_POLICY[method].default.paginationType) as PaginationType;
 
     if (Object.keys(req.params ?? {}).length > 0) {
         Object.assign(req.query, req.params);
     }
 
-    const pagination = PaginationHelper.getPaginationRequest(paginationType, req.query);
+    const pagination = PaginationHelper.getPaginationRequest(req.query);
 
     const withDeleted = _.isBoolean(customReadManyRequestOptions?.softDeleted)
         ? customReadManyRequestOptions.softDeleted
@@ -239,9 +235,7 @@ export async function doStuff<T extends EntityType>(
         return query;
     })();
     const paginationKeys = readManyOptions.paginationKeys ?? factoryOption.primaryKeys.map(({ name }) => name);
-    const numberOfTake =
-        (pagination.type === 'cursor' ? readManyOptions.numberOfTake : (pagination.limit ?? readManyOptions.numberOfTake)) ??
-        CRUD_POLICY[method].default.numberOfTake;
+    const numberOfTake = pagination.limit ?? readManyOptions.numberOfTake ?? CRUD_POLICY[method].default.numberOfTake;
     const sort = readManyOptions.sort ? Sort[readManyOptions.sort] : CRUD_POLICY[method].default.sort;
 
     const crudReadManyRequest: CrudReadManyRequest<T> = new CrudReadManyRequest<T>()

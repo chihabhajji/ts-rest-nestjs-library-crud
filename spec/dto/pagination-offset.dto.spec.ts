@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
-import { PaginationOffsetDto } from './pagination-offset.dto';
+import { PaginationOffsetDto } from '../../src/lib/dto/pagination-offset.dto';
 
 function validateByPaginationOffsetDto(obj: unknown) {
     const paginationOffsetDto = plainToInstance(PaginationOffsetDto, obj);

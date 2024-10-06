@@ -7,7 +7,7 @@ import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS } from '../constants';
 import { GROUP, Method } from '../interface';
 
-import type { CrudOptions, CrudUpdateOneRequest, EntityType, FactoryOption } from '../interface';
+import type { CrudOptions, CrudUpdateOneRequest, EntityType, FactoryOption, UpdateRouteOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { ClassConstructor } from 'class-transformer';
 import type { Request } from 'express';
@@ -22,7 +22,7 @@ export function UpdateRequestInterceptor(crudOptions: CrudOptions, factoryOption
 
         async intercept(context: ExecutionContext, next: CallHandler<unknown>): Promise<Observable<unknown>> {
             const req = context.switchToHttp().getRequest<Request>();
-            const updatedOptions = crudOptions.routes?.[method] ?? {};
+            const updatedOptions: Pick<UpdateRouteOption, 'exclude' | 'listeners'> = crudOptions.routes?.[method] ?? {};
             const body = await this.validateBody(req.body);
 
             const params = await this.checkParams(crudOptions.entity, req.params, factoryOption.columns);

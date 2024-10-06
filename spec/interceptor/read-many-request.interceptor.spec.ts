@@ -5,11 +5,11 @@ import { IsString, IsNotEmpty, IsNumber, IsEmpty } from 'class-validator';
 import { of } from 'rxjs';
 import { BaseEntity } from 'typeorm';
 
-import { CustomReadManyRequestOptions } from './custom-request.interceptor';
-import { ReadManyRequestInterceptor } from './read-many-request.interceptor';
-import { CUSTOM_REQUEST_OPTIONS } from '../constants';
-import { ExecutionContextHost } from '../provider';
-import { CrudLogger } from '../provider/crud-logger';
+import { CustomReadManyRequestOptions } from '../../src/lib/interceptor/custom-request.interceptor';
+import { ReadManyRequestInterceptor } from '../../src/lib/interceptor/read-many-request.interceptor';
+import { CUSTOM_REQUEST_OPTIONS } from '../../src/lib/constants';
+import { ExecutionContextHost } from '../../src/lib/provider';
+import { CrudLogger } from '../../src/lib/provider/crud-logger';
 
 describe('ReadManyRequestInterceptor', () => {
     it('should intercept and pass CrudReadManyRequest', () => {

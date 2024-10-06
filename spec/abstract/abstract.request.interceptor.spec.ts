@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-import { RequestAbstractInterceptor } from './abstract.request.interceptor';
-import { CrudAbstractEntity } from '../../../spec/crud.abstract.entity';
-import { CrudOptions, Method } from '../interface';
-import { ExecutionContextHost } from '../provider';
-import { CrudLogger } from '../provider/crud-logger';
+import { RequestAbstractInterceptor } from '../../src/lib/abstract/abstract.request.interceptor';
+import { CrudAbstractEntity } from '../crud.abstract.entity';
+import { CrudOptions, Method } from '../../src/lib/interface';
+import { ExecutionContextHost } from '../../src/lib/provider';
+import { CrudLogger } from '../../src/lib/provider/crud-logger';
 
 describe('RequestAbstractInterceptor', () => {
     let fooInterceptor: RequestAbstractInterceptor;

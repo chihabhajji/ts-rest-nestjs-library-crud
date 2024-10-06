@@ -6,7 +6,7 @@ import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS } from '../constants';
 import { GROUP, Method } from '../interface';
 
-import type { CrudOptions, FactoryOption, CrudCreateRequest, EntityType } from '../interface';
+import type { CrudOptions, FactoryOption, CrudCreateRequest, EntityType, CreateRouteOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { ClassConstructor } from 'class-transformer';
 import type { Request } from 'express';
@@ -25,7 +25,7 @@ export function CreateRequestInterceptor(crudOptions: CrudOptions, factoryOption
 
         async intercept(context: ExecutionContext, next: CallHandler<unknown>): Promise<Observable<unknown>> {
             const req = context.switchToHttp().getRequest<Request>();
-            const createOptions = crudOptions.routes?.[method] ?? {};
+            const createOptions: Pick<CreateRouteOption, 'exclude' | 'listeners'> = crudOptions.routes?.[method] ?? {};
 
             if (Object.keys(req.params ?? {}).length > 0) {
                 Object.assign(req.body, req.params);

@@ -4,9 +4,9 @@ import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseEntity } from 'typeorm';
 
-import { SearchRequestInterceptor } from './search-request.interceptor';
-import { Sort } from '../interface';
-import { CrudLogger } from '../provider/crud-logger';
+import { SearchRequestInterceptor } from '../../src/lib/interceptor/search-request.interceptor';
+import { Sort } from '../../src/lib/interface';
+import { CrudLogger } from '../../src/lib/provider/crud-logger';
 
 describe('SearchRequestInterceptor', () => {
     class TestEntity extends BaseEntity {

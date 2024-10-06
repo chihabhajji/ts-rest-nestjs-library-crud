@@ -130,10 +130,6 @@ export class CrudReadManyRequest<T> {
             this._findOptions.skip = this.pagination.offset;
         }
 
-        if (this.pagination.type === PaginationType.CURSOR && this.pagination.nextCursor) {
-            this._findOptions.where = this._deserialize(this);
-        }
-
         return this;
     }
 

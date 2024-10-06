@@ -10,7 +10,7 @@ import { RequestFieldsDto } from '../dto/request-fields.dto';
 import { Method } from '../interface';
 
 import type { CustomReadOneRequestOptions } from './custom-request.interceptor';
-import type { CrudOptions, FactoryOption, CrudReadOneRequest } from '../interface';
+import type { CrudOptions, FactoryOption, CrudReadOneRequest, ReadOneRouteOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { Request } from 'express';
 import type QueryString from 'qs';
@@ -26,14 +26,14 @@ export function ReadOneRequestInterceptor(crudOptions: CrudOptions, factoryOptio
         async intercept(context: ExecutionContext, next: CallHandler<unknown>): Promise<Observable<unknown>> {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const req: Record<string, any> = context.switchToHttp().getRequest<Request>();
-            const readOneOptions = crudOptions.routes?.[method] ?? {};
+            const readOneOptions: Pick<ReadOneRouteOption, 'exclude' | 'softDelete'> = crudOptions.routes?.[method] ?? {};
             const customReadOneRequestOptions: CustomReadOneRequestOptions = req[CUSTOM_REQUEST_OPTIONS];
 
             const fieldsByRequest = this.checkFields(req.query?.fields);
 
             const softDeleted = _.isBoolean(customReadOneRequestOptions?.softDeleted)
                 ? customReadOneRequestOptions.softDeleted
-                : readOneOptions.softDelete ?? CRUD_POLICY[method].default.softDeleted;
+                : (readOneOptions.softDelete ?? CRUD_POLICY[method].default.softDeleted);
 
             const params = await this.checkParams(crudOptions.entity, req.params, factoryOption.columns);
             const crudReadOneRequest: CrudReadOneRequest<typeof crudOptions.entity> = {

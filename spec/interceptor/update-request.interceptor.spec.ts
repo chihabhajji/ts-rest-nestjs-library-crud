@@ -4,8 +4,8 @@ import { Type } from 'class-transformer';
 import { IsEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { BaseEntity } from 'typeorm';
 
-import { UpdateRequestInterceptor } from './update-request.interceptor';
-import { CrudLogger } from '../provider/crud-logger';
+import { UpdateRequestInterceptor } from '../../src/lib/interceptor/update-request.interceptor';
+import { CrudLogger } from '../../src/lib/provider/crud-logger';
 
 type InterceptorType = NestInterceptor<any, any> & { validateBody: (body: unknown) => Promise<unknown> };
 describe('UpdateRequestInterceptor', () => {

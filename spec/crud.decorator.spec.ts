@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, Repository } from 'typeorm';
 
-import { Crud } from './crud.decorator';
-import { CrudService } from './crud.service';
+import { Crud } from '../src/lib/crud.decorator';
+import { CrudService } from '../src/lib/crud.service';
 
 describe('Crud.Decorator', () => {
     @Entity('test')

@@ -1,8 +1,8 @@
 import { ConflictException } from '@nestjs/common';
 
-import { CrudService } from './crud.service';
+import { CrudService } from '../src/lib/crud.service';
 
-import type { EntityType } from './interface';
+import type { EntityType } from '../src/lib/interface';
 import type { BaseEntity, Repository } from 'typeorm';
 
 describe('CrudService', () => {

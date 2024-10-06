@@ -838,7 +838,7 @@
     multer "1.4.4-lts.1"
     tslib "2.7.0"
 
-"@nestjs/swagger@^7.1.17":
+"@nestjs/swagger@^7.4.2":
   version "7.4.2"
   resolved "https://registry.yarnpkg.com/@nestjs/swagger/-/swagger-7.4.2.tgz#3b72eb8a6d1366e8e211f9a90681283bb18817e9"
   integrity sha512-Mu6TEn1M/owIvAx2B4DUQObQXqo2028R2s9rSZ/hJEgBK95+doTwS0DjmVA2wTeZTyVtXOoN7CsoM5pONBzvKQ==
@@ -2104,7 +2104,7 @@ class-transformer@^0.5.1:
   resolved "https://registry.yarnpkg.com/class-transformer/-/class-transformer-0.5.1.tgz#24147d5dffd2a6cea930a3250a677addf96ab336"
   integrity sha512-SQa1Ws6hUbfC98vKGxZH3KFY0Y1lm5Zm0SY8XX9zbK7FJCyVEac3ATW0RIpwzW+oOfmHE5PMPufDG9hCfoEOMw==
 
-class-validator@^0.14.0:
+class-validator@^0.14.1:
   version "0.14.1"
   resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.14.1.tgz#ff2411ed8134e9d76acfeb14872884448be98110"
   integrity sha512-2VEG9JICxIqTpoK1eMzZqaV+u/EiwEJkMGzTrZf6sU/fwsnOITVgYJ8yojSy6CaXtO9V0Cc6ZQZ8h8m4UBuLwQ==
@@ -5001,9 +5001,9 @@ levn@^0.4.1:
     type-check "~0.4.0"
 
 libphonenumber-js@^1.10.53:
-  version "1.11.10"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.10.tgz#d9ccd71a227bfb9775eb0516744c26d8c0f4b057"
-  integrity sha512-yHEtzDlG2VbhuxMIo/sAUY+lyL5YThqD+gHT3YyelaRWRQv1VeyEk94jDvviRT4PYmLJR9cHxvtrx9h2f4OAIQ==
+  version "1.11.11"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.11.tgz#f4d521d7e2d1958916820e3725e609a2ea7575a8"
+  integrity sha512-mF3KaORjJQR6JBNcOkluDcJKhtoQT4VTLRMrX1v/wlBayL4M8ybwEDeryyPcrSEJmD0rVwHUbBarpZwN5NfPFQ==
 
 lilconfig@~3.1.2:
   version "3.1.2"

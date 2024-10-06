@@ -4,7 +4,7 @@ import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS, CUSTOM_REQUEST_OPTIONS } from '../constants';
 import { Method } from '../interface';
 
-import type { CrudOptions, CrudRecoverRequest, FactoryOption } from '../interface';
+import type { CrudOptions, CrudRecoverRequest, FactoryOption, RecoverRouteOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { Request } from 'express';
 import type { Observable } from 'rxjs';
@@ -19,7 +19,7 @@ export function RecoverRequestInterceptor(crudOptions: CrudOptions, factoryOptio
         async intercept(context: ExecutionContext, next: CallHandler<unknown>): Promise<Observable<unknown>> {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const req: Record<string, any> = context.switchToHttp().getRequest<Request>();
-            const recoverOptions = crudOptions.routes?.[method] ?? {};
+            const recoverOptions: Pick<RecoverRouteOption, 'exclude' | 'listeners'> = crudOptions.routes?.[method] ?? {};
 
             const customRequestOption = req[CUSTOM_REQUEST_OPTIONS];
             const params = await this.checkParams(crudOptions.entity, customRequestOption?.params ?? req.params, factoryOption.columns);

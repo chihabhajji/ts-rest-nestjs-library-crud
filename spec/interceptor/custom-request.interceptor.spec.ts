@@ -1,8 +1,8 @@
 import { of } from 'rxjs';
 
-import { CustomRequestInterceptor } from './custom-request.interceptor';
-import { CUSTOM_REQUEST_OPTIONS } from '../constants';
-import { ExecutionContextHost } from '../provider';
+import { CustomRequestInterceptor } from '../../src/lib/interceptor/custom-request.interceptor';
+import { CUSTOM_REQUEST_OPTIONS } from '../../src/lib/constants';
+import { ExecutionContextHost } from '../../src/lib/provider';
 
 import type { CallHandler } from '@nestjs/common';
 

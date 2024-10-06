@@ -1,7 +1,7 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 
-import { PaginationHelper } from './pagination.helper';
-import { PaginationType } from '../interface';
+import { PaginationHelper } from '../src/lib/provider/pagination.helper';
+import { PaginationType } from '../src/lib/interface';
 
 describe('Pagination Helper', () => {
     it('should serialize entity', () => {

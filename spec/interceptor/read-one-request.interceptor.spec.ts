@@ -2,11 +2,11 @@
 import { HttpStatus, UnprocessableEntityException } from '@nestjs/common';
 import { of } from 'rxjs';
 
-import { ReadOneRequestInterceptor } from './read-one-request.interceptor';
-import { CRUD_ROUTE_ARGS, CUSTOM_REQUEST_OPTIONS } from '../constants';
-import { Method } from '../interface';
-import { ExecutionContextHost } from '../provider';
-import { CrudLogger } from '../provider/crud-logger';
+import { ReadOneRequestInterceptor } from '../../src/lib/interceptor/read-one-request.interceptor';
+import { CRUD_ROUTE_ARGS, CUSTOM_REQUEST_OPTIONS } from '../../src/lib/constants';
+import { Method } from '../../src/lib/interface';
+import { ExecutionContextHost } from '../../src/lib/provider';
+import { CrudLogger } from '../../src/lib/provider/crud-logger';
 
 import type { CallHandler, NestInterceptor } from '@nestjs/common';
 import type { BaseEntity } from 'typeorm';

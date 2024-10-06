@@ -1,8 +1,8 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { BaseEntity, Entity } from 'typeorm';
 
-import { CrudRouteFactory } from './crud.route.factory';
-import { PaginationType } from './interface';
+import { CrudRouteFactory } from '../src/lib/crud.route.factory';
+import { PaginationType } from '../src/lib/interface';
 
 describe('CrudRouteFactory', () => {
     @Entity('test')

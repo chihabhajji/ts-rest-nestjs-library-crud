@@ -1,5 +1,6 @@
 import type { Method, Sort, PaginationType, Author, EntityType } from '.';
 import type { NestInterceptor, Type } from '@nestjs/common';
+import type { AppRouteDeleteNoBody, AppRouteMutation, AppRouteQuery } from '@ts-rest/core';
 import type { ColumnType } from 'typeorm';
 
 interface RouteBaseOption {
@@ -11,23 +12,6 @@ interface RouteBaseOption {
      * An array of interceptors to apply to the route handler
      */
     interceptors?: Array<Type<NestInterceptor>>;
-    /**
-     * Configures the Swagger documentation for the route
-     */
-    swagger?: {
-        /**
-         * If set to true, the route will not be included in the Swagger documentation
-         */
-        hide?: boolean;
-        /**
-         * Configures the Swagger documentation for the route's response
-         */
-        response?: Type<unknown>;
-        /**
-         * Configures the Swagger documentation for the route's request body
-         */
-        body?: Type<unknown>;
-    };
     /**
      * Configures the keys of entity to exclude from the route's response
      */
@@ -47,7 +31,108 @@ export interface PrimaryKey {
     name: string;
     type?: ColumnType;
 }
+interface WithAuthor {
+    /**
+     * Configures ways to save author information to the Entity after the operation completed.
+     * It updates Entity's `author.property` field with respect to the value of `author.filter` from express's Request object.
+     * If `author.filter` is not found in the Request object, author.value will be used as default.
+     */
+    author?: Author;
+}
 
+export type ReadOneRouteOption = AppRouteQuery &
+    RouteBaseOption & {
+        /**
+         * If set to true, soft-deleted entity could be included in the result.
+         * @default false
+         */
+        softDelete?: boolean;
+        /**
+         * @default false
+         */
+        relations?: false | string[];
+    };
+
+export type ReadManyRouteOption = AppRouteQuery &
+    Omit<RouteBaseOption, 'response'> & {
+        /**
+         * Way to order the result
+         * @default Sort.ASC
+         */
+        sort?: Sort | `${Sort}`;
+        /**
+         * Max number of entities should be taken.
+         * @default 100
+         */
+        numberOfTake?: number;
+        /**
+         * What relations of entity should be loaded.
+         * If set to false or an empty array, no relations will be loaded.
+         * @default false
+         */
+        relations?: false | string[];
+        /**
+         * If set to true, soft-deleted entity could be included in the result.
+         * @default true
+         */
+        softDelete?: boolean;
+        /**
+         * Keys to use for pagination.
+         * If not set, the keys will be taken from the entity's primary keys.
+         */
+        paginationKeys?: string[];
+    };
+
+export type SearchRouteOption = AppRouteQuery &
+    RouteBaseOption & {
+        /**
+         * Type of pagination to use. Currently 'offset' and 'cursor' are supported.
+         * @default PaginationType.CURSOR
+         */
+        paginationType?: PaginationType | `${PaginationType}`;
+        /**
+         * Default number of entities should be taken. See `crud.policy.ts` for more details.
+         * @default 20
+         */
+        numberOfTake?: number;
+        /**
+         * Max number of entities should be taken. See `crud.policy.ts` for more details.
+         * @default 100
+         */
+        limitOfTake?: number;
+        /**
+         * What relations of entity should be loaded. If set to false or an empty array, no relations will be loaded. See `crud.policy.ts` for more details.
+         * @default false
+         */
+        relations?: false | string[];
+        /**
+         * If set to true, soft-deleted entity could be included in the result. See `crud.policy.ts` for more details.
+         * @default true
+         */
+        softDelete?: boolean;
+        /**
+         * Keys to use for pagination.
+         * If not set, the keys will be taken from the entity's primary keys.
+         */
+        paginationKeys?: string[];
+    };
+
+export type CreateRouteOption = AppRouteMutation & RouteBaseOption & SaveOptions & WithAuthor;
+export type UpdateRouteOption = AppRouteMutation & RouteBaseOption & SaveOptions & WithAuthor;
+
+export type DeleteRouteOption = AppRouteDeleteNoBody &
+    RouteBaseOption &
+    SaveOptions &
+    WithAuthor & {
+        /**
+         * If set to true, the entity will be soft deleted. (Records the delete date of the entity)
+         * @default true
+         */
+        softDelete?: boolean;
+    };
+
+export type UpsertRouteOption = AppRouteMutation & RouteBaseOption & SaveOptions & WithAuthor;
+export type RecoverRouteOption = AppRouteMutation & RouteBaseOption & SaveOptions & WithAuthor;
 /**
  * See `crud.policy.ts` to check default values.
  */
@@ -67,207 +152,13 @@ export interface CrudOptions {
      * Configures each CRUD method
      */
     routes?: {
-        [Method.READ_ONE]?: {
-            /**
-             * Array of path parameters to use for the route
-             *
-             * @example
-             * ```ts
-             * params: ['id', 'subId']
-             * ```
-             * It will generate the route `/:id/:subId`
-             */
-            params?: string[];
-            /**
-             * If set to true, soft-deleted entity could be included in the result.
-             * @default false
-             */
-            softDelete?: boolean;
-            /**
-             * @default false
-             */
-            relations?: false | string[];
-        } & RouteBaseOption;
-        [Method.READ_MANY]?: {
-            /**
-             * Way to order the result
-             * @default Sort.ASC
-             */
-            sort?: Sort | `${Sort}`;
-            /**
-             * Type of pagination to use. Currently 'offset' and 'cursor' are supported.
-             * @default PaginationType.CURSOR
-             */
-            paginationType?: PaginationType | `${PaginationType}`;
-            /**
-             * Max number of entities should be taken.
-             * @default 100
-             */
-            numberOfTake?: number;
-            /**
-             * What relations of entity should be loaded.
-             * If set to false or an empty array, no relations will be loaded.
-             * @default false
-             */
-            relations?: false | string[];
-            /**
-             * If set to true, soft-deleted entity could be included in the result.
-             * @default true
-             */
-            softDelete?: boolean;
-            /**
-             * Keys to use for pagination.
-             * If not set, the keys will be taken from the entity's primary keys.
-             */
-            paginationKeys?: string[];
-        } & Omit<RouteBaseOption, 'response'>;
-        [Method.SEARCH]?: {
-            /**
-             * Type of pagination to use. Currently 'offset' and 'cursor' are supported.
-             * @default PaginationType.CURSOR
-             */
-            paginationType?: PaginationType | `${PaginationType}`;
-            /**
-             * Default number of entities should be taken. See `crud.policy.ts` for more details.
-             * @default 20
-             */
-            numberOfTake?: number;
-            /**
-             * Max number of entities should be taken. See `crud.policy.ts` for more details.
-             * @default 100
-             */
-            limitOfTake?: number;
-            /**
-             * What relations of entity should be loaded. If set to false or an empty array, no relations will be loaded. See `crud.policy.ts` for more details.
-             * @default false
-             */
-            relations?: false | string[];
-            /**
-             * If set to true, soft-deleted entity could be included in the result. See `crud.policy.ts` for more details.
-             * @default true
-             */
-            softDelete?: boolean;
-            /**
-             * Keys to use for pagination.
-             * If not set, the keys will be taken from the entity's primary keys.
-             */
-            paginationKeys?: string[];
-        } & RouteBaseOption;
-        [Method.CREATE]?: {
-            swagger?: {
-                /**
-                 * Configures the Swagger documentation for the route's request body
-                 */
-                body?: Type<unknown>;
-            };
-            /**
-             * Configures ways to save author information to the Entity after the operation completed.
-             * It updates Entity's `author.property` field with respect to the value of `author.filter` from express's Request object.
-             * If `author.filter` is not found in the Request object, author.value will be used as default.
-             */
-            author?: Author;
-        } & RouteBaseOption &
-            SaveOptions;
-        [Method.UPDATE]?: {
-            /**
-             * Array of path parameters to use for the route
-             *
-             * @example
-             * ```ts
-             * params: ['id', 'subId']
-             * ```
-             * It will generate the route `/:id/:subId`.
-             */
-            params?: string[];
-            swagger?: {
-                /**
-                 * Configures the Swagger documentation for the route's request body
-                 */
-                body?: Type<unknown>;
-            };
-            /**
-             * Configures ways to save author information to the Entity after the operation completed.
-             *
-             * It updates Entity's `author.property` field with respect to the value of `author.filter` from express's Request object.
-             * If `author.filter` is not found in the Request object, author.value will be used as default.
-             */
-            author?: Author;
-        } & RouteBaseOption &
-            SaveOptions;
-        [Method.DELETE]?: {
-            /**
-             * Array of path parameters to use for the route
-             *
-             * @example
-             * ```ts
-             * params: ['id', 'subId']
-             * ```
-             * It will generate the route `/:id/:subId`
-             */
-            params?: string[];
-            /**
-             * If set to true, the entity will be soft deleted. (Records the delete date of the entity)
-             * @default true
-             */
-            softDelete?: boolean;
-            /**
-             * Configures ways to save author information to the Entity after the operation completed.
-             *
-             * It updates Entity's `author.property` field with respect to the value of `author.filter` from express's Request object.
-             * If `author.filter` is not found in the Request object, author.value will be used as default.
-             */
-            author?: Author;
-        } & RouteBaseOption &
-            SaveOptions;
-        [Method.UPSERT]?: {
-            /**
-             * Array of path parameters to use for the route
-             *
-             * @example
-             * ```ts
-             * params: ['id', 'subId']
-             * ```
-             * It will generate the route `/:id/:subId`
-             */
-            params?: string[];
-            swagger?: {
-                /**
-                 * Configures the Swagger documentation for the route's request body
-                 */
-                body?: Type<unknown>;
-            };
-            /**
-             * Configures ways to save author information to the Entity after the operation completed.
-             *
-             * It updates Entity's `author.property` field with respect to the value of `author.filter` from express's Request object.
-             * If `author.filter` is not found in the Request object, author.value will be used as default.
-             */
-            author?: Author;
-        } & RouteBaseOption &
-            SaveOptions;
-        [Method.RECOVER]?: {
-            /**
-             * Array of path parameters to use for the route
-             *
-             * @example
-             * ```ts
-             * params: ['id', 'subId']
-             * ```
-             * It will generate the route `/:id/:subId`
-             */
-            params?: string[];
-            /**
-             * Configures ways to save author information to the Entity after the operation completed.
-             *
-             * It updates Entity's `author.property` field with respect to the value of `author.filter` from express's Request object.
-             * If `author.filter` is not found in the Request object, author.value will be used as default.
-             */
-            author?: Author;
-        } & RouteBaseOption &
-            SaveOptions;
+        [Method.READ_ONE]?: ReadOneRouteOption;
+        [Method.READ_MANY]?: ReadManyRouteOption;
+        [Method.SEARCH]?: SearchRouteOption;
+        [Method.CREATE]?: CreateRouteOption;
+        [Method.UPDATE]?: UpdateRouteOption;
+        [Method.DELETE]?: DeleteRouteOption;
+        [Method.UPSERT]?: UpsertRouteOption;
+        [Method.RECOVER]?: RecoverRouteOption;
     };
-    /**
-     * An array of methods to generate routes for. If not specified, all routes will be generated.
-     */
-    only?: Array<Method | `${Method}`>;
 }

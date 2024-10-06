@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
-import { RequestFieldsDto } from './request-fields.dto';
+import { RequestFieldsDto } from '../../src/lib/dto/request-fields.dto';
 
 describe('RequestFieldsDto', () => {
     it('should be a string', () => {

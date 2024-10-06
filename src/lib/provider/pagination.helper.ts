@@ -2,8 +2,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
-import { PaginationCursorDto, PaginationOffsetDto } from '../dto';
-import { PaginationType } from '../interface';
+import { PaginationOffsetDto } from '../dto';
 
 import type { RequestSearchDto } from '../dto';
 import type { PaginationRequest } from '../interface';
@@ -27,12 +26,9 @@ export class PaginationHelper {
         }
     }
 
-    static getPaginationRequest(paginationType: PaginationType, query: Record<string, unknown>): PaginationRequest {
+    static getPaginationRequest(query: Record<string, unknown>): PaginationRequest {
         const plain = query ?? {};
-        const transformed =
-            paginationType === PaginationType.OFFSET
-                ? plainToInstance(PaginationOffsetDto, plain, { excludeExtraneousValues: true })
-                : plainToInstance(PaginationCursorDto, plain, { excludeExtraneousValues: true });
+        const transformed = plainToInstance(PaginationOffsetDto, plain, { excludeExtraneousValues: true });
         const [error] = validateSync(transformed, { stopAtFirstError: true });
 
         if (error) {

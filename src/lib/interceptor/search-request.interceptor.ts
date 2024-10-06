@@ -15,7 +15,7 @@ import { PaginationHelper, TypeOrmQueryBuilderHelper } from '../provider';
 import { CrudReadManyRequest } from '../request';
 
 import type { CustomSearchRequestOptions } from './custom-request.interceptor';
-import type { CrudOptions, EntityType, FactoryOption } from '../interface';
+import type { CrudOptions, EntityType, FactoryOption, SearchRouteOption } from '../interface';
 import type { OperatorUnion } from '../interface/query-operation.interface';
 import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import type { Request } from 'express';
@@ -33,10 +33,9 @@ export function SearchRequestInterceptor(crudOptions: CrudOptions, factoryOption
         async intercept(context: ExecutionContext, next: CallHandler<unknown>): Promise<Observable<unknown>> {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const req: Record<string, any> = context.switchToHttp().getRequest<Request>();
-            const searchOptions = crudOptions.routes?.[method] ?? {};
+            const searchOptions: SearchRouteOption = crudOptions.routes?.[method] ?? ({} as SearchRouteOption);
             const customSearchRequestOptions: CustomSearchRequestOptions = req[CUSTOM_REQUEST_OPTIONS];
-            const paginationType = (searchOptions.paginationType ?? CRUD_POLICY[method].default.paginationType) as PaginationType;
-            const pagination = PaginationHelper.getPaginationRequest(paginationType, req.body);
+            const pagination = PaginationHelper.getPaginationRequest(req.body);
             const isNextPage = PaginationHelper.isNextPage(pagination);
 
             if (Object.keys(req.params ?? {}).length > 0 && !isNextPage) {
@@ -83,10 +82,7 @@ export function SearchRequestInterceptor(crudOptions: CrudOptions, factoryOption
                     : [];
 
             const paginationKeys = searchOptions.paginationKeys ?? factoryOption.primaryKeys.map(({ name }) => name);
-            const numberOfTake =
-                (pagination.type === 'cursor' ? requestSearchDto.take : pagination.limit) ??
-                searchOptions.numberOfTake ??
-                CRUD_POLICY[method].default.numberOfTake;
+            const numberOfTake = pagination.limit ?? searchOptions.numberOfTake ?? CRUD_POLICY[method].default.numberOfTake;
             const order =
                 requestSearchDto.order ?? paginationKeys.reduce((acc, key) => ({ ...acc, [key]: CRUD_POLICY[method].default.sort }), {});
 
@@ -138,7 +134,7 @@ export function SearchRequestInterceptor(crudOptions: CrudOptions, factoryOption
             }
 
             if ('take' in requestSearchDto) {
-                this.validateTake(requestSearchDto.take, searchOptions.limitOfTake);
+                this.validateTake(requestSearchDto.take, (searchOptions as any).limitOfTake);
             }
 
             return requestSearchDto;
