@@ -2,12 +2,11 @@ import { mixin, UnprocessableEntityException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import _ from 'lodash';
-import { LessThan, MoreThan } from 'typeorm';
 
 import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS, CUSTOM_REQUEST_OPTIONS } from '../constants';
 import { CRUD_POLICY } from '../crud.policy';
-import { Method, Sort, GROUP, PaginationType } from '../interface';
+import { Method, Sort, GROUP } from '../interface';
 import { PaginationHelper } from '../provider';
 import { CrudReadManyRequest } from '../request';
 
@@ -122,38 +121,16 @@ export function ReadManyRequestInterceptor(crudOptions: CrudOptions, factoryOpti
             return factoryOption.relations;
         }
 
-        deserialize<T>({ pagination, findOptions, sort }: CrudReadManyRequest<T>): FindOptionsWhere<T> {
-            if (pagination.type === PaginationType.OFFSET) {
-                return PaginationHelper.deserialize(pagination.where);
-            }
-            const query: Record<string, unknown> = PaginationHelper.deserialize(pagination.where);
-            const lastObject: Record<string, unknown> = PaginationHelper.deserialize(pagination.nextCursor);
-
-            const operator = (key: keyof T) => ((findOptions.order?.[key] ?? sort) === Sort.DESC ? LessThan : MoreThan);
-
-            for (const [key, value] of Object.entries(lastObject)) {
-                query[key] = operator(key as keyof T)(value);
-            }
-            return query as FindOptionsWhere<T>;
+        deserialize<T>({ pagination }: CrudReadManyRequest<T>): FindOptionsWhere<T> {
+            return PaginationHelper.deserialize(pagination.where);
         }
     }
 
     return mixin(MixinInterceptor);
 }
 
-function deserialize<T>({ pagination, findOptions, sort }: CrudReadManyRequest<T>): FindOptionsWhere<T> {
-    if (pagination.type === PaginationType.OFFSET) {
-        return PaginationHelper.deserialize(pagination.where);
-    }
-    const query: Record<string, unknown> = PaginationHelper.deserialize(pagination.where);
-    const lastObject: Record<string, unknown> = PaginationHelper.deserialize(pagination.nextCursor);
-
-    const operator = (key: keyof T) => ((findOptions.order?.[key] ?? sort) === Sort.DESC ? LessThan : MoreThan);
-
-    for (const [key, value] of Object.entries(lastObject)) {
-        query[key] = operator(key as keyof T)(value);
-    }
-    return query as FindOptionsWhere<T>;
+function deserialize<T>({ pagination }: CrudReadManyRequest<T>): FindOptionsWhere<T> {
+    return PaginationHelper.deserialize(pagination.where);
 }
 async function validateQuery<T>(query: Record<string, unknown>, entity: T) {
     if (_.isNil(query)) {

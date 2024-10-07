@@ -3,7 +3,7 @@ import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Type } from 'class-transformer';
 import { Repository, ViewColumn, ViewEntity } from 'typeorm';
 
-import { Crud, CrudController, CrudOptions, CrudService, Method, PaginationType } from '../../src';
+import { Crud, CrudController, CrudOptions, CrudService } from '../../src';
 import { BaseEntity } from '../base/base.entity';
 import { BaseService } from '../base/base.service';
 import { TestHelper } from '../test.helper';
@@ -33,15 +33,14 @@ export class BaseViewService extends CrudService<BaseView> {
     }
 }
 
-export function ViewEntityPaginationModule(crudOptions?: Record<PaginationType, CrudOptions['routes']>) {
+export function ViewEntityPaginationModule(crudOptions?: CrudOptions['routes']) {
     function cursorController() {
         @Crud({
             entity: BaseView,
-            routes: crudOptions?.[PaginationType.CURSOR],
-            only: [Method.READ_MANY, Method.SEARCH],
+            routes: crudOptions,
             logging: true,
         })
-        @Controller(`${PaginationType.CURSOR}`)
+        @Controller()
         class CursorController implements CrudController<BaseView> {
             constructor(public readonly crudService: BaseViewService) {}
         }
@@ -49,8 +48,8 @@ export function ViewEntityPaginationModule(crudOptions?: Record<PaginationType, 
     }
 
     function offsetController() {
-        @Crud({ entity: BaseView, routes: crudOptions?.[PaginationType.OFFSET], only: [Method.READ_MANY, Method.SEARCH], logging: true })
-        @Controller(`${PaginationType.OFFSET}`)
+        @Crud({ entity: BaseView, routes: crudOptions, logging: true })
+        @Controller()
         class OffsetController implements CrudController<BaseView> {
             constructor(public readonly crudService: BaseViewService) {}
         }

@@ -2,14 +2,13 @@ import { mixin, UnprocessableEntityException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import _ from 'lodash';
-import { LessThan, MoreThan, And } from 'typeorm';
 
 import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS, CUSTOM_REQUEST_OPTIONS } from '../constants';
 import { CRUD_POLICY } from '../crud.policy';
 import { CreateParamsDto } from '../dto/params.dto';
 import { RequestSearchDto } from '../dto/request-search.dto';
-import { GROUP, Method, PaginationType, Sort } from '../interface';
+import { GROUP, Method, Sort } from '../interface';
 import { operatorBetween, operatorIn, operatorNull, operatorList } from '../interface/query-operation.interface';
 import { PaginationHelper, TypeOrmQueryBuilderHelper } from '../provider';
 import { CrudReadManyRequest } from '../request';
@@ -20,7 +19,7 @@ import type { OperatorUnion } from '../interface/query-operation.interface';
 import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import type { Request } from 'express';
 import type { Observable } from 'rxjs';
-import type { FindOptionsWhere, FindOperator } from 'typeorm';
+import type { FindOptionsWhere } from 'typeorm';
 
 const method = Method.SEARCH;
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -134,7 +133,9 @@ export function SearchRequestInterceptor(crudOptions: CrudOptions, factoryOption
             }
 
             if ('take' in requestSearchDto) {
-                this.validateTake(requestSearchDto.take, (searchOptions as any).limitOfTake);
+                const limitOfTake =
+                    'limitOfTake' in searchOptions && typeof searchOptions.limitOfTake === 'number' ? searchOptions.limitOfTake : undefined;
+                this.validateTake(requestSearchDto.take, limitOfTake);
             }
 
             return requestSearchDto;
@@ -290,44 +291,8 @@ export function SearchRequestInterceptor(crudOptions: CrudOptions, factoryOption
             return factoryOption.relations;
         }
 
-        deserialize<T>({ pagination, findOptions }: CrudReadManyRequest<T>): Array<FindOptionsWhere<T>> {
-            const where = findOptions.where as Array<FindOptionsWhere<EntityType>>;
-            if (pagination.type === PaginationType.OFFSET) {
-                return where;
-            }
-            const lastObject: Record<string, unknown> = PaginationHelper.deserialize(pagination.nextCursor);
-
-            const operator = (key: keyof T) =>
-                (findOptions.order?.[key] ?? CRUD_POLICY[method].default.sort) === Sort.DESC ? LessThan : MoreThan;
-
-            const cursorCondition: Record<string, FindOperator<T>> = Object.entries(lastObject).reduce(
-                (queryFilter, [key, operand]) => ({
-                    ...queryFilter,
-                    [key]: operator(key as keyof T)(operand),
-                }),
-                {},
-            );
-
-            const mergedKeySet: Set<string> = new Set();
-            for (const queryFilter of where) {
-                for (const [key, operation] of Object.entries(cursorCondition)) {
-                    mergedKeySet.add(key);
-                    _.merge(
-                        queryFilter,
-                        key in queryFilter
-                            ? { [key]: And(operation, (queryFilter as Record<string, FindOperator<T>>)[key]) }
-                            : { [key]: operation },
-                    );
-                }
-            }
-            for (const [key, operation] of Object.entries(cursorCondition)) {
-                if (mergedKeySet.has(key)) {
-                    continue;
-                }
-                where.push({ [key]: operation });
-            }
-
-            return where;
+        deserialize<T>({ findOptions }: CrudReadManyRequest<T>): Array<FindOptionsWhere<T>> {
+            return findOptions.where as Array<FindOptionsWhere<EntityType>>;
         }
     }
 

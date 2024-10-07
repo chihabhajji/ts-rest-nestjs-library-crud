@@ -3,22 +3,18 @@ import { z } from 'zod';
 
 import type { ContractEntity } from './contract.entity';
 import type { BaseEntity } from 'spec/base/base.entity';
-import type { CrudReadManyRequest } from 'src/lib/request';
+import type { CrudSearchRequest } from 'src';
+import type { PaginationOffsetRequestDto } from 'src/lib/dto';
 import type { DeepPartial } from 'typeorm';
 
 const c = initContract();
-type NonFunctionPropertyNames<T> = {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    [K in keyof T]: T[K] extends Function ? never : K;
-}[keyof T];
 
-type NonFunctionProperties<T> = Pick<T, NonFunctionPropertyNames<T>>;
 export const contractContract = c.router(
     {
         readMany: {
             method: 'GET',
             path: '/',
-            query: c.type<NonFunctionProperties<CrudReadManyRequest<ContractEntity>>>(),
+            query: c.type<PaginationOffsetRequestDto>(),
             responses: {
                 200: c.type<{
                     data: ContractEntity[];
@@ -33,6 +29,17 @@ export const contractContract = c.router(
             pathParams: z.object({ _id: z.string() }),
             responses: {
                 200: c.type<ContractEntity>(),
+            },
+        },
+        search: {
+            method: 'POST',
+            path: '/search',
+            body: c.type<CrudSearchRequest<ContractEntity>>(),
+            responses: {
+                200: c.type<{
+                    metadata: { total: number; nextCursor: string; page: number; pages: number; offset: number };
+                    data: ContractEntity[];
+                }>(),
             },
         },
         create: {
@@ -54,8 +61,33 @@ export const contractContract = c.router(
                 400: ContractNoBody,
             },
         },
+        delete: {
+            method: 'DELETE',
+            path: '/:_id',
+            responses: {
+                200: ContractNoBody,
+                404: ContractNoBody,
+            },
+        },
+
+        recover: {
+            method: 'PATCH',
+            path: '/:_id/recover',
+            responses: { 200: ContractNoBody },
+            body: ContractNoBody,
+        },
+
+        upsert: {
+            method: 'PATCH',
+            path: '/:_id/upsert',
+            responses: {
+                200: c.type<ContractEntity>(),
+            },
+            body: c.type<DeepPartial<Omit<ContractEntity, '_id'> & { _id: string }>>(),
+            pathParams: z.object({ _id: z.string().optional() }),
+        },
     },
     {
-        pathPrefix: '/base',
+        pathPrefix: '/contract',
     },
 );

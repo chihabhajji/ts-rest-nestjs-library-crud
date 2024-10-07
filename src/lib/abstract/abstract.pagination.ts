@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { IsString, IsOptional } from 'class-validator';
 
-import { PaginationResponse, PaginationType } from '../interface';
+import { PaginationResponse } from '../interface';
 
 interface PaginationQuery {
     where: string;
@@ -19,8 +19,6 @@ export abstract class AbstractPaginationRequest {
     private _where: string;
     private _total: number;
     private _nextCursor: string;
-
-    type: PaginationType;
 
     @Expose({ name: 'nextCursor' })
     @IsString()

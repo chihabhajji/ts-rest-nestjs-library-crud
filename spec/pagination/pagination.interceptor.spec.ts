@@ -4,7 +4,6 @@ import request from 'supertest';
 
 import { PaginationModule } from './pagination.module';
 import { ReadManyRequestInterceptor } from './read-many.request.interceptor';
-import { PaginationType } from '../../src';
 import { BaseService } from '../base/base.service';
 import { TestHelper } from '../test.helper';
 
@@ -20,17 +19,8 @@ describe('Pagination with interceptor', () => {
             const moduleFixture: TestingModule = await Test.createTestingModule({
                 imports: [
                     PaginationModule({
-                        cursor: {
-                            readMany: {
-                                paginationType: 'cursor',
-                                interceptors: [ReadManyRequestInterceptor],
-                            },
-                        },
-                        offset: {
-                            readMany: {
-                                paginationType: PaginationType.OFFSET,
-                                interceptors: [ReadManyRequestInterceptor],
-                            },
+                        readMany: {
+                            interceptors: [ReadManyRequestInterceptor],
                         },
                     }),
                 ],
@@ -49,18 +39,14 @@ describe('Pagination with interceptor', () => {
 
         it('should be returned deleted entities each interceptor soft-deleted option', async () => {
             const deleteIdList: number[] = Array.from({ length: 100 }, (_, index) => index + 1).filter((number) => number % 2 === 0);
-            const { body: responseBodyBeforeDelete } = await request(app.getHttpServer())
-                .get(`/${PaginationType.CURSOR}`)
-                .expect(HttpStatus.OK);
-            const { body: offsetResponseBodyBeforeDelete } = await request(app.getHttpServer())
-                .get(`/${PaginationType.OFFSET}`)
-                .expect(HttpStatus.OK);
+            const { body: responseBodyBeforeDelete } = await request(app.getHttpServer()).get('/').expect(HttpStatus.OK);
+            const { body: offsetResponseBodyBeforeDelete } = await request(app.getHttpServer()).get('/').expect(HttpStatus.OK);
 
             expect(responseBodyBeforeDelete.data).toEqual(offsetResponseBodyBeforeDelete.data);
             expect(responseBodyBeforeDelete.data).toHaveLength(defaultLimit);
 
             for (const id of deleteIdList) {
-                await request(app.getHttpServer()).delete(`/${PaginationType.CURSOR}/${id}`).expect(HttpStatus.OK);
+                await request(app.getHttpServer()).delete(`/${id}`).expect(HttpStatus.OK);
             }
             const deletedIdSet = new Set(deleteIdList);
 
@@ -69,11 +55,9 @@ describe('Pagination with interceptor', () => {
             }: { body: { data: Array<{ id: number; deletedAt?: unknown }>; metadata: { nextCursor: unknown } } } = await request(
                 app.getHttpServer(),
             )
-                .get(`/${PaginationType.CURSOR}`)
+                .get('/')
                 .expect(HttpStatus.OK);
-            const { body: offsetResponseBodyAfterDelete } = await request(app.getHttpServer())
-                .get(`/${PaginationType.OFFSET}`)
-                .expect(HttpStatus.OK);
+            const { body: offsetResponseBodyAfterDelete } = await request(app.getHttpServer()).get('/').expect(HttpStatus.OK);
             expect(responseBodyAfterDelete.data).toEqual(offsetResponseBodyAfterDelete.data);
 
             expect(responseBodyAfterDelete.data).toHaveLength(defaultLimit);
@@ -91,13 +75,13 @@ describe('Pagination with interceptor', () => {
             }
 
             const { body: nextResponseBody } = await request(app.getHttpServer())
-                .get(`/${PaginationType.CURSOR}`)
+                .get('/')
                 .query({
                     nextCursor: responseBodyAfterDelete.metadata.nextCursor,
                 })
                 .expect(HttpStatus.OK);
             const { body: offsetNextResponseBody } = await request(app.getHttpServer())
-                .get(`/${PaginationType.OFFSET}`)
+                .get('/')
                 .query({
                     nextCursor: offsetResponseBodyAfterDelete.metadata.nextCursor,
                     offset: offsetResponseBodyAfterDelete.metadata.offset,
@@ -122,17 +106,8 @@ describe('Pagination with interceptor', () => {
             const moduleFixture: TestingModule = await Test.createTestingModule({
                 imports: [
                     PaginationModule({
-                        cursor: {
-                            readMany: {
-                                paginationType: 'cursor',
-                                interceptors: [],
-                            },
-                        },
-                        offset: {
-                            readMany: {
-                                paginationType: 'offset',
-                                interceptors: [],
-                            },
+                        readMany: {
+                            interceptors: [],
                         },
                     }),
                 ],
@@ -151,27 +126,23 @@ describe('Pagination with interceptor', () => {
 
         it('should be returned deleted entities each interceptor soft-deleted option', async () => {
             const { body: responseBodyBeforeDelete }: { body: { data: Array<{ id: number }> } } = await request(app.getHttpServer())
-                .get(`/${PaginationType.CURSOR}`)
+                .get('/')
                 .expect(HttpStatus.OK);
-            const { body: offsetResponseBodyBeforeDelete } = await request(app.getHttpServer())
-                .get(`/${PaginationType.OFFSET}`)
-                .expect(HttpStatus.OK);
+            const { body: offsetResponseBodyBeforeDelete } = await request(app.getHttpServer()).get('/').expect(HttpStatus.OK);
 
             expect(responseBodyBeforeDelete.data).toEqual(offsetResponseBodyBeforeDelete.data);
             expect(responseBodyBeforeDelete.data).toHaveLength(defaultLimit);
 
             const deleteIdList: number[] = responseBodyBeforeDelete.data.filter(({ id }) => id % 2 === 0).map(({ id }) => id);
             for (const id of deleteIdList) {
-                await request(app.getHttpServer()).delete(`/${PaginationType.CURSOR}/${id}`).expect(HttpStatus.OK);
+                await request(app.getHttpServer()).delete(`/${id}`).expect(HttpStatus.OK);
             }
             const deletedIdSet = new Set(deleteIdList);
 
             const { body: responseBodyAfterDelete }: { body: { data: Array<{ id: number }> } } = await request(app.getHttpServer())
-                .get(`/${PaginationType.CURSOR}`)
+                .get('/')
                 .expect(HttpStatus.OK);
-            const { body: offsetResponseBodyAfterDelete } = await request(app.getHttpServer())
-                .get(`/${PaginationType.OFFSET}`)
-                .expect(HttpStatus.OK);
+            const { body: offsetResponseBodyAfterDelete } = await request(app.getHttpServer()).get('/').expect(HttpStatus.OK);
             expect(responseBodyAfterDelete.data).toEqual(offsetResponseBodyAfterDelete.data);
 
             expect(responseBodyAfterDelete.data).toHaveLength(defaultLimit);

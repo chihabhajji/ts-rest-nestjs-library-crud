@@ -1,4 +1,4 @@
-import type { Method, Sort, PaginationType, Author, EntityType } from '.';
+import type { Method, Sort, Author, EntityType } from '.';
 import type { NestInterceptor, Type } from '@nestjs/common';
 import type { AppRouteDeleteNoBody, AppRouteMutation, AppRouteQuery } from '@ts-rest/core';
 import type { ColumnType } from 'typeorm';
@@ -83,13 +83,8 @@ export type ReadManyRouteOption = AppRouteQuery &
         paginationKeys?: string[];
     };
 
-export type SearchRouteOption = AppRouteQuery &
+export type SearchRouteOption = AppRouteMutation &
     RouteBaseOption & {
-        /**
-         * Type of pagination to use. Currently 'offset' and 'cursor' are supported.
-         * @default PaginationType.CURSOR
-         */
-        paginationType?: PaginationType | `${PaginationType}`;
         /**
          * Default number of entities should be taken. See `crud.policy.ts` for more details.
          * @default 20

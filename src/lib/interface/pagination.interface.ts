@@ -1,18 +1,6 @@
 import type { PaginationAbstractResponse } from '../abstract';
 import type { PaginationOffsetDto } from '../dto/pagination-offset.dto';
 
-export enum PaginationType {
-    OFFSET = 'offset',
-}
-
-export interface CursorPaginationResponse<T> extends PaginationAbstractResponse<T> {
-    metadata: {
-        limit: number;
-        total: number;
-        nextCursor: string;
-    };
-}
-
 export interface OffsetPaginationResponse<T> extends PaginationAbstractResponse<T> {
     metadata: {
         /**
@@ -40,4 +28,4 @@ export interface OffsetPaginationResponse<T> extends PaginationAbstractResponse<
 
 export type PaginationRequest = PaginationOffsetDto;
 
-export type PaginationResponse<T> = CursorPaginationResponse<T> | OffsetPaginationResponse<T>;
+export type PaginationResponse<T> = OffsetPaginationResponse<T>;

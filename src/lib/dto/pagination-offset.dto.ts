@@ -2,11 +2,10 @@ import { Expose, Transform, Type } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
 
 import { AbstractPaginationRequest } from '../abstract';
-import { OffsetPaginationResponse, PaginationType } from '../interface';
+import { OffsetPaginationResponse } from '../interface';
+import { NonFunctionProperties } from './read-many-request.dto';
 
 export class PaginationOffsetDto extends AbstractPaginationRequest {
-    type: PaginationType.OFFSET = PaginationType.OFFSET;
-
     @Expose({ name: 'limit' })
     @Type(() => Number)
     @Transform(({ value }) => (value && value < 0 ? 0 : value))
@@ -35,3 +34,5 @@ export class PaginationOffsetDto extends AbstractPaginationRequest {
         };
     }
 }
+
+export type PaginationOffsetRequestDto = Omit<NonFunctionProperties<PaginationOffsetDto>, 'query' | 'where' | 'isNext' | 'nextCursor'>;

@@ -14,8 +14,8 @@ import type { TestingModule } from '@nestjs/testing';
 @Crud({
     entity: BaseEntity,
     routes: {
-        readMany: { paginationType: 'cursor' },
-        search: { paginationType: 'cursor' },
+        readMany: {},
+        search: {},
     },
 })
 @Controller('cursor')
@@ -26,8 +26,8 @@ class CursorController implements CrudController<BaseEntity> {
 @Crud({
     entity: BaseEntity,
     routes: {
-        readMany: { paginationType: 'offset' },
-        search: { paginationType: 'offset' },
+        readMany: {},
+        search: {},
     },
 })
 @Controller('offset')

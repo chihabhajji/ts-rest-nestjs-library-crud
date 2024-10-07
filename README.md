@@ -13,31 +13,31 @@
     </a>
     <a href="https://www.npmjs.com/package/@nestjs-library/crud">
         <img src="https://img.shields.io/npm/dw/@nestjs-library/crud">
-    </a>        
+    </a>
 </p>
 
 <p align="center">
     <a href="./README.md">
         <span>English<span>
-    </a> 
+    </a>
     <span>|</span>
     <a href="./README.ko.md">
         <span>한국어<span>
-    </a> 
+    </a>
 </p>
 
 This is a Typescript library that provides a NestJS decorator which automatically generates CRUD routes of a controller for given TypeORM entity. The decorator generates endpoints for not only create, retrieve one, retrieve many, update, delete but also upsert, recover and search operations for the entity.
 
 ## Features
 
--   Automatically generates CRUD routes for a given TypeORM entity
--   Automatically generates swagger for generated routes
--   Supports pagination, sorting, filtering, relation, searching, upserting, recovering and soft deleting
--   Supports complex search criteria(`LIKE`, `ILIKE`, `BETWEEN`, `IN`, `NULL`, `?`, `@>`, `JSON_CONTAINS`)
--   Supports strong validation by using [class-validator](https://github.com/typestack/class-validator)
--   Supports saving author information for mutating operations(Create, Update, Upsert, Delete and Recover)
--   Supports adding decorators, interceptors to each routes in Controller for customizing
--   Supports customizing swagger response
+- Automatically generates CRUD routes for a given TypeORM entity
+- Automatically generates swagger for generated routes
+- Supports pagination, sorting, filtering, relation, searching, upserting, recovering and soft deleting
+- Supports complex search criteria(`LIKE`, `ILIKE`, `BETWEEN`, `IN`, `NULL`, `?`, `@>`, `JSON_CONTAINS`)
+- Supports strong validation by using [class-validator](https://github.com/typestack/class-validator)
+- Supports saving author information for mutating operations(Create, Update, Upsert, Delete and Recover)
+- Supports adding decorators, interceptors to each routes in Controller for customizing
+- Supports customizing swagger response
 
 ## Installation
 
@@ -132,14 +132,14 @@ export class UserModule {}
 
 After the module initializes, it will generate the following CRUD endpoints:
 
--   `GET /users` - retrieves a list of users with pagination
--   `GET /users/:id` - retrieves a single user by ID
--   `POST /users` - creates single or multiple users
--   `PATCH /users/:id` - updates an existing user by ID
--   `DELETE /users/:id` - deletes an existing user by ID
--   `PUT /users/:id` - upserts (update or create) an existing user by ID
--   `POST /users/search` - retrieves a list of users based on complex search criteria
--   `POST /users/:id/recover` - recovers a soft deleted user by ID
+- `GET /users` - retrieves a list of users with pagination
+- `GET /users/:id` - retrieves a single user by ID
+- `POST /users` - creates single or multiple users
+- `PATCH /users/:id` - updates an existing user by ID
+- `DELETE /users/:id` - deletes an existing user by ID
+- `PUT /users/:id` - upserts (update or create) an existing user by ID
+- `POST /users/search` - retrieves a list of users based on complex search criteria
+- `POST /users/:id/recover` - recovers a soft deleted user by ID
 
 ## Configuration
 
@@ -203,11 +203,10 @@ interface ReadOneOptions {
 #### `READ_MANY`
 
 ```typescript
-import { Sort, PaginationType } from 'src/lib/interface';
+import { Sort } from 'src/lib/interface';
 
 interface ReadManyOptions {
     sort?: Sort | `${Sort}`;
-    paginationType?: PaginationType | `${PaginationType}`;
     numberOfTake?: number;
     relations?: false | string[];
     softDelete?: boolean;
@@ -218,10 +217,7 @@ interface ReadManyOptions {
 #### `SEARCH`
 
 ```typescript
-import { PaginationType } from 'src/lib/interface';
-
 interface SearchOptions {
-    paginationType?: PaginationType | `${PaginationType}`;
     numberOfTake?: number;
     limitOfTake?: number;
     relations?: false | string[];

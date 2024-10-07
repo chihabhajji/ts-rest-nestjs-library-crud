@@ -1,4 +1,4 @@
-import { CrudReadManyRequest } from '.';
+import { CrudReadManyRequest } from '../../src/lib/request';
 
 describe('CrudReadManyRequest', () => {
     it('should be defined', () => {

@@ -9,6 +9,7 @@ import { ContractTestModule } from './controller.module';
 
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { TestingModule } from '@nestjs/testing';
+import type { BaseEntity } from 'typeorm';
 
 describe('ContractCreation', () => {
     let app: INestApplication;
@@ -24,9 +25,15 @@ describe('ContractCreation', () => {
             ],
         }).compile();
         app = moduleFixture.createNestApplication<NestExpressApplication>();
-        // await app.init();
         const crudService = app.get<ContractTestService>(ContractTestService);
         await crudService.repository.clear();
+        for (let i = 0; i < 8; i++) {
+            await crudService.repository.save({
+                nname: `name${i}`,
+                col2: { a: i },
+                col3: { a: i.toString(), b: (i + 1).toString() },
+            } as Omit<ContractEntity, keyof BaseEntity | '_id'>);
+        }
         await app.listen(3000);
     });
 
@@ -50,10 +57,12 @@ describe('ContractCreation', () => {
     //
     // it('should be applied to search', async () => {});
     it('should be provided endpoints', async () => {
-        // const routerPathList = TestHelper.getRoutePath(app.getHttpServer());
-        // expect(routerPathList.get).toHaveLength(2);
-        // expect(routerPathList.post).toHaveLength(1);
-        // expect(routerPathList.patch).toHaveLength(2);
+        const routerPathList = TestHelper.getRoutePath(app.getHttpServer());
+        expect(routerPathList.get).toEqual(expect.arrayContaining(['/contract', '/contract/:_id']));
+        expect(routerPathList.post).toEqual(expect.arrayContaining(['/contract', '/contract/search']));
+        expect(routerPathList.delete).toEqual(expect.arrayContaining(['/contract/:_id']));
+        expect(routerPathList.put).toEqual(expect.arrayContaining(['/contract/:_id/upsert']));
+        expect(routerPathList.patch).toEqual(expect.arrayContaining(['/contract/:_id']));
     });
 
     it('should be completed default operation', async () => {
@@ -72,14 +81,15 @@ describe('ContractCreation', () => {
             query: {
                 limit: 10,
                 offset: 0,
-            } as any,
+            },
         });
         expect(readManyStatus).toBe(HttpStatus.OK);
         if (readManyStatus === 200) {
-            expect(readManyBody.data).toHaveLength(1);
-            expect(readManyBody.data.at(0)).toEqual(createBody);
+            expect(readManyBody.data).toHaveLength(9);
+            console.log('readManyBody.metadata', readManyBody.metadata);
+            console.log(readManyBody.data);
+            expect(readManyBody.data.at(9)).toEqual(createBody);
         }
-        console.log(readManyBody);
         const { body: readOneBody, status: readOneStatus } = await contractClient.readOne({
             params: { _id: createBody._id.toString() },
         });
@@ -87,28 +97,40 @@ describe('ContractCreation', () => {
         if (readOneStatus === 200) {
             expect(readOneBody).toEqual(createBody);
         }
+        const nname = 'changed';
+        const col3 = { a: 'newA' };
+        const { body: updateResponse, status: updateStatus } = await contractClient.update({
+            body: {
+                nname,
+                col3,
+            },
+            params: {
+                _id: createBody._id.toString(),
+            },
+        });
+        expect(updateStatus).toBe(HttpStatus.OK);
+        if (updateStatus === 200) {
+            expect(updateResponse._id).toBeDefined();
+            expect(updateResponse._id).toEqual(createBody._id);
+            expect(updateResponse.nname).toBe(nname);
+            expect(updateResponse.col3).toEqual(col3);
+        }
 
-        // const { body: updateBody } = await request(app.getHttpServer())
-        //     .patch(`/base/${createBody._id}`)
-        //     .send({ name: 'changed' })
-        //     .expect(HttpStatus.OK);
-        // expect(updateBody._id).toEqual(createBody._id);
-        // expect(updateBody.name).toBe('changed');
-        //
-        // const newObjectId = '642fb1b43ca2efcf4a7bdd71';
-        // const { body: upsertBody } = await request(app.getHttpServer())
-        //     .put(`/base/${newObjectId}`)
-        //     .send({ name: 'name2' })
-        //     .expect(HttpStatus.OK);
-        // expect(upsertBody._id).toEqual(newObjectId);
-        // expect(upsertBody.name).toEqual('name2');
-        //
-        // const { body: deleteBody } = await request(app.getHttpServer()).delete(`/base/${createBody._id}`).expect(HttpStatus.OK);
-        // expect(deleteBody._id).toEqual(createBody._id);
-        //
-        // const { body: recoveryBody } = await request(app.getHttpServer())
-        //     .post(`/base/${createBody._id}/recover`)
-        //     .expect(HttpStatus.CREATED);
-        // expect(recoveryBody._id).toEqual(createBody._id);
+        const newObjectId = '642fb1b43ca2efcf4a7bdd71';
+        const { status: upsertStatus, body: upsertBody } = await contractClient.upsert({
+            body: { nname: 'name' },
+            params: { _id: newObjectId },
+        });
+        expect(upsertStatus).toEqual(HttpStatus.OK);
+        if (upsertStatus === 200) {
+            expect(upsertBody._id).toEqual(newObjectId);
+            expect(upsertBody.nname).toEqual('name');
+        }
+
+        const { status: deleteStatus, body: deleteBody } = await contractClient.delete({ params: { _id: createBody._id.toString() } });
+        expect(deleteStatus).toEqual(HttpStatus.OK);
+        if (deleteStatus === 200) {
+            expect(deleteBody).toEqual({});
+        }
     });
 });

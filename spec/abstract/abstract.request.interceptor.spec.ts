@@ -2,10 +2,10 @@ import { Request } from 'express';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { RequestAbstractInterceptor } from '../../src/lib/abstract/abstract.request.interceptor';
-import { CrudAbstractEntity } from '../crud.abstract.entity';
 import { CrudOptions, Method } from '../../src/lib/interface';
 import { ExecutionContextHost } from '../../src/lib/provider';
 import { CrudLogger } from '../../src/lib/provider/crud-logger';
+import { CrudAbstractEntity } from '../crud.abstract.entity';
 
 describe('RequestAbstractInterceptor', () => {
     let fooInterceptor: RequestAbstractInterceptor;

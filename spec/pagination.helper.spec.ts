@@ -1,7 +1,6 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 
 import { PaginationHelper } from '../src/lib/provider/pagination.helper';
-import { PaginationType } from '../src/lib/interface';
 
 describe('Pagination Helper', () => {
     it('should serialize entity', () => {
@@ -19,19 +18,19 @@ describe('Pagination Helper', () => {
     });
 
     it('should be able to return pagination for GET_MORE type', () => {
-        expect(PaginationHelper.getPaginationRequest(PaginationType.CURSOR, { key: 'value', nextCursor: 'token' })).toEqual({
+        expect(PaginationHelper.getPaginationRequest({ key: 'value', nextCursor: 'token' })).toEqual({
             query: 'token',
             type: 'cursor',
             _isNext: false,
         });
 
-        expect(PaginationHelper.getPaginationRequest(PaginationType.CURSOR, { key: 'value' })).toEqual({
+        expect(PaginationHelper.getPaginationRequest({ key: 'value' })).toEqual({
             query: undefined,
             type: 'cursor',
             _isNext: false,
         });
 
-        expect(PaginationHelper.getPaginationRequest(PaginationType.CURSOR, { query: 'query' })).toEqual({
+        expect(PaginationHelper.getPaginationRequest({ query: 'query' })).toEqual({
             query: undefined,
             type: 'cursor',
             _isNext: false,
@@ -39,15 +38,15 @@ describe('Pagination Helper', () => {
     });
 
     it('should be validate pagination query', () => {
-        expect(PaginationHelper.getPaginationRequest(PaginationType.CURSOR, undefined as any)).toEqual({
+        expect(PaginationHelper.getPaginationRequest(undefined as any)).toEqual({
             type: 'cursor',
             query: undefined,
             _isNext: false,
         });
 
-        expect(() => PaginationHelper.getPaginationRequest(PaginationType.CURSOR, { nextCursor: 3 })).toThrow(UnprocessableEntityException);
+        expect(() => PaginationHelper.getPaginationRequest({ nextCursor: 3 })).toThrow(UnprocessableEntityException);
 
-        expect(PaginationHelper.getPaginationRequest(PaginationType.OFFSET, undefined as any)).toEqual({
+        expect(PaginationHelper.getPaginationRequest(undefined as any)).toEqual({
             type: 'offset',
             limit: undefined,
             offset: undefined,
@@ -55,7 +54,7 @@ describe('Pagination Helper', () => {
             _isNext: false,
         });
 
-        expect(() => PaginationHelper.getPaginationRequest(PaginationType.OFFSET, { nextCursor: 3 })).toThrow(UnprocessableEntityException);
+        expect(() => PaginationHelper.getPaginationRequest({ nextCursor: 3 })).toThrow(UnprocessableEntityException);
     });
 
     it('should be return empty object when nextCursor is undefined', () => {
