@@ -1,5 +1,4 @@
 import { HttpStatus, Controller, Injectable, Module } from '@nestjs/common';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Type } from 'class-transformer';
@@ -20,33 +19,27 @@ import type { Repository } from 'typeorm';
 @Entity('general')
 class GeneralEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
-    @ApiProperty({ description: 'ID' })
     @IsNumber({}, { groups: [GROUP.PARAMS] })
     @Type(() => Number)
     id: number;
 
     @Column()
-    @ApiProperty({ description: 'Name' })
     @IsString({ always: true })
     @IsOptional({ groups: [GROUP.CREATE, GROUP.UPDATE, GROUP.READ_MANY, GROUP.UPSERT, GROUP.SEARCH] })
     name: string;
 
     @Column({ nullable: true })
-    @ApiProperty({ description: 'Description' })
     @IsString({ always: true })
     @IsOptional({ always: true })
     description: string;
 
     @CreateDateColumn()
-    @ApiProperty({ description: 'Created At' })
     createdAt: Date;
 
     @UpdateDateColumn()
-    @ApiProperty({ description: 'Last Modified At' })
     updatedAt: Date;
 
     @DeleteDateColumn()
-    @ApiHideProperty()
     deletedAt?: Date;
 }
 
@@ -60,14 +53,14 @@ class TestService extends CrudService<GeneralEntity> {
 @Crud({
     entity: GeneralEntity,
     routes: {
-        readOne: { exclude: ['col1'] },
-        readMany: { exclude: ['col2'] },
-        search: { exclude: ['col3'] },
-        create: { exclude: ['col4'] },
-        update: { exclude: ['col1', 'col2'] },
-        delete: { exclude: ['col1', 'col3'] },
-        upsert: { exclude: ['col1', 'col4'] },
-        recover: { exclude: ['col1', 'col2', 'col3'] },
+        readOne: { exclude: ['col1'] } as any,
+        readMany: { exclude: ['col2'] } as any,
+        search: { exclude: ['col3'] } as any,
+        create: { exclude: ['col4'] } as any,
+        update: { exclude: ['col1', 'col2'] } as any,
+        delete: { exclude: ['col1', 'col3'] } as any,
+        upsert: { exclude: ['col1', 'col4'] } as any,
+        recover: { exclude: ['col1', 'col2', 'col3'] } as any,
     },
 })
 @Controller('general')

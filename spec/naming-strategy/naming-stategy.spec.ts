@@ -1,5 +1,4 @@
 import { Controller, HttpStatus, INestApplication, Injectable, Module } from '@nestjs/common';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { TestingModule, Test } from '@nestjs/testing';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Exclude, Type } from 'class-transformer';
@@ -47,7 +46,6 @@ class ContentEntity {
     @IsOptional({ groups: [GROUP.READ_MANY, GROUP.READ_ONE] })
     @Type(() => Date)
     @CreateDateColumn()
-    @ApiProperty({ type: Date, format: 'date-time' })
     declare readonly createdAt?: Date;
 
     @IsDateString(undefined, {
@@ -56,7 +54,6 @@ class ContentEntity {
     @IsOptional({ groups: [GROUP.READ_MANY, GROUP.READ_ONE] })
     @UpdateDateColumn()
     @Type(() => Date)
-    @ApiProperty({ type: Date, format: 'date-time' })
     declare readonly updatedAt?: Date;
 
     @Exclude()
@@ -69,7 +66,6 @@ class ContentEntity {
         groups: [GROUP.READ_MANY, GROUP.READ_ONE, GROUP.SEARCH, GROUP.PARAMS],
     })
     @Type(() => Date)
-    @ApiHideProperty()
     declare readonly deletedAt?: Date;
 }
 
@@ -90,7 +86,7 @@ class PhotoService extends CrudService<PhotoEntity> {
 
 @Crud({
     entity: PhotoEntity,
-    routes: { [Method.DELETE]: { softDelete: false } },
+    routes: { [Method.DELETE]: { softDelete: false, path: '/:id', method: 'DELETE', responses: {} } },
 })
 @Controller('photo')
 class PhotoController implements CrudController<PhotoEntity> {
@@ -114,7 +110,7 @@ class QuestionService extends CrudService<QuestionEntity> {
 
 @Crud({
     entity: QuestionEntity,
-    routes: { [Method.DELETE]: { softDelete: false } },
+    routes: { [Method.DELETE]: { softDelete: false, path: '/:id', method: 'DELETE', responses: {} } },
 })
 @Controller('question')
 class QuestionController implements CrudController<QuestionEntity> {

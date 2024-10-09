@@ -32,10 +32,10 @@ CRUD Rest API를 자동으로 생성하는 라이브러리입니다.
 
 ## 기능
 
-Entity를 기반으로 ReadOne, ReadMany, Search, Update, Insert, Upsert, Delete, Recover API과 Swagger Documents를 제공합니다.
+Entity를 기반으로 ReadOne, ReadMany, Search, Update, Insert, Upsert, Delete, Recover API과. 
 
 - TypeOrm이 지원하는 모든 종류의 DBMS에서 사용할 수 있습니다.
-- 모든 API는 `Swagger` Document를 제공하며, `Decorator`를 통해 Override 할 수 있습니다.
+- 모든 API는 `제공하며, `Decorator`를 통해 Override 할 수 있습니다.
 - 모든 API는 `Options`을 통해 관리할 수 있으며, Request 별로 제어가 필요한 경우 `Interceptor`를 통해 Request와 Response를 관리할 수 있습니다.
 - 모든 API는 `Validation`을 위한 Dto를 제공하고 있으며, Entity에 정의된 `groups` 정보를 통해 자동으로 생성합니다.
 - `ReadMany`와 `Search`는 Cursor와 Offset Type의 페이지네이션을 제공합니다.
@@ -189,10 +189,6 @@ import { NestInterceptor, Type } from '@nestjs/common';
 interface RouteBaseOption {
     decorators?: Array<PropertyDecorator | MethodDecorator>;
     interceptors?: Array<Type<NestInterceptor>>;
-    swagger?: {
-        hide?: boolean;
-        response?: Type<unknown>;
-    };
 }
 ```
 
@@ -249,9 +245,6 @@ import { Type } from '@nestjs/common';
 import { Author } from 'src/lib/interface';
 
 interface CreateOptions {
-    swagger?: {
-        body?: Type<unknown>;
-    };
     author?: Author;
 }
 ```
@@ -264,9 +257,6 @@ import { Author } from 'src/lib/interface';
 
 interface UpdateOptions {
     params?: string[];
-    swagger?: {
-        body?: Type<unknown>;
-    };
     author?: Author;
 }
 ```
@@ -288,9 +278,6 @@ interface DeleteOptions {
 ```typescript
 interface UpsertOptions {
     params?: string[];
-    swagger?: {
-        body?: Type<unknown>;
-    };
     author?: Author;
 }
 ```

@@ -31,13 +31,11 @@ This is a Typescript library that provides a NestJS decorator which automaticall
 ## Features
 
 - Automatically generates CRUD routes for a given TypeORM entity
-- Automatically generates swagger for generated routes
 - Supports pagination, sorting, filtering, relation, searching, upserting, recovering and soft deleting
 - Supports complex search criteria(`LIKE`, `ILIKE`, `BETWEEN`, `IN`, `NULL`, `?`, `@>`, `JSON_CONTAINS`)
 - Supports strong validation by using [class-validator](https://github.com/typestack/class-validator)
 - Supports saving author information for mutating operations(Create, Update, Upsert, Delete and Recover)
 - Supports adding decorators, interceptors to each routes in Controller for customizing
-- Supports customizing swagger response
 
 ## Installation
 
@@ -172,10 +170,6 @@ import { NestInterceptor, Type } from '@nestjs/common';
 interface RouteBaseOption {
     decorators?: Array<PropertyDecorator | MethodDecorator>;
     interceptors?: Array<Type<NestInterceptor>>;
-    swagger?: {
-        hide?: boolean;
-        response?: Type<unknown>;
-    };
     exclude?: string[];
 }
 ```
@@ -233,9 +227,6 @@ import { Type } from '@nestjs/common';
 import { Author } from 'src/lib/interface';
 
 interface CreateOptions {
-    swagger?: {
-        body?: Type<unknown>;
-    };
     author?: Author;
 }
 ```
@@ -248,9 +239,6 @@ import { Author } from 'src/lib/interface';
 
 interface UpdateOptions {
     params?: string[];
-    swagger?: {
-        body?: Type<unknown>;
-    };
     author?: Author;
 }
 ```
@@ -272,9 +260,6 @@ interface DeleteOptions {
 ```typescript
 interface UpsertOptions {
     params?: string[];
-    swagger?: {
-        body?: Type<unknown>;
-    };
     author?: Author;
 }
 ```

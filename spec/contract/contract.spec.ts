@@ -86,9 +86,8 @@ describe('ContractCreation', () => {
         expect(readManyStatus).toBe(HttpStatus.OK);
         if (readManyStatus === 200) {
             expect(readManyBody.data).toHaveLength(9);
-            console.log('readManyBody.metadata', readManyBody.metadata);
-            console.log(readManyBody.data);
-            expect(readManyBody.data.at(9)).toEqual(createBody);
+            expect(readManyBody.data).toEqual(expect.arrayContaining([createBody]));
+            expect(readManyBody.data.at(0)).toEqual(createBody);
         }
         const { body: readOneBody, status: readOneStatus } = await contractClient.readOne({
             params: { _id: createBody._id.toString() },
@@ -121,6 +120,7 @@ describe('ContractCreation', () => {
             body: { nname: 'name' },
             params: { _id: newObjectId },
         });
+
         expect(upsertStatus).toEqual(HttpStatus.OK);
         if (upsertStatus === 200) {
             expect(upsertBody._id).toEqual(newObjectId);
@@ -129,8 +129,8 @@ describe('ContractCreation', () => {
 
         const { status: deleteStatus, body: deleteBody } = await contractClient.delete({ params: { _id: createBody._id.toString() } });
         expect(deleteStatus).toEqual(HttpStatus.OK);
-        if (deleteStatus === 200) {
-            expect(deleteBody).toEqual({});
+        if (deleteStatus === 200 && deleteBody) {
+            expect(deleteBody._id).toEqual(createBody._id);
         }
     });
 });

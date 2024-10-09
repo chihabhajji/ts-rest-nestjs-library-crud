@@ -1,5 +1,4 @@
 import { Controller, Injectable, Module } from '@nestjs/common';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { IsInt, IsOptional, IsString } from 'class-validator';
 import { Entity, BaseEntity, Repository, PrimaryColumn, Column, DeleteDateColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
@@ -36,15 +35,12 @@ export class TestEntity extends BaseEntity {
     deletedBy: string;
 
     @DeleteDateColumn()
-    @ApiHideProperty()
     deletedAt?: Date;
 
     @CreateDateColumn()
-    @ApiProperty({ description: 'Created At' })
     createdAt?: Date;
 
     @UpdateDateColumn()
-    @ApiProperty({ description: 'Last Modified At' })
     lastModifiedAt?: Date;
 }
 

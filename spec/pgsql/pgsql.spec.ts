@@ -1,5 +1,4 @@
 import { HttpStatus, Controller, Injectable, Module } from '@nestjs/common';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Exclude, Type } from 'class-transformer';
@@ -20,21 +19,18 @@ import type { Repository } from 'typeorm';
 @Entity('test')
 class TestEntity extends BaseEntity {
     @PrimaryGeneratedColumn({ type: 'bigint' })
-    @ApiProperty({ description: 'ID' })
     @Type(() => Number)
     @IsNumber({}, { groups: [GROUP.UPDATE, GROUP.READ_ONE, GROUP.PARAMS, GROUP.READ_MANY, GROUP.SEARCH] })
     @IsOptional({ groups: [GROUP.READ_MANY, GROUP.SEARCH, GROUP.UPDATE, GROUP.UPSERT] })
     id: number;
 
     @Column()
-    @ApiProperty({ description: 'name' })
     @IsString({ always: true })
     @IsOptional({ groups: [GROUP.READ_ONE, GROUP.READ_MANY, GROUP.SEARCH, GROUP.UPDATE] })
     @MaxLength(40, { always: true })
     name: string;
 
     @DeleteDateColumn()
-    @ApiHideProperty()
     @Exclude()
     deletedAt?: Date;
 }

@@ -65,7 +65,7 @@ export const contractContract = c.router(
             method: 'DELETE',
             path: '/:_id',
             responses: {
-                200: ContractNoBody,
+                200: c.type<ContractEntity>(),
                 404: ContractNoBody,
             },
         },
@@ -78,7 +78,7 @@ export const contractContract = c.router(
         },
 
         upsert: {
-            method: 'PATCH',
+            method: 'PUT',
             path: '/:_id/upsert',
             responses: {
                 200: c.type<ContractEntity>(),
