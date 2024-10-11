@@ -1,4 +1,5 @@
 import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Test } from '@nestjs/testing';
 
 import { TestHelper } from '../test.helper';
@@ -13,13 +14,16 @@ import type { BaseEntity } from 'typeorm';
 
 describe('ContractCreation', () => {
     let app: INestApplication;
+    let mongod: MongoMemoryServer;
 
     beforeAll(async () => {
+mongod = await MongoMemoryServer.create();
+        const mongoUri = mongod.getUri();
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ContractTestModule,
                 TestHelper.getTypeOrmMongoModule(
-                    'mongodb+srv://chihab:idBTvrpU0Pba2rhd@cluster0.4eh6xyz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+                    mongoUri,
                     [ContractEntity],
                 ),
             ],

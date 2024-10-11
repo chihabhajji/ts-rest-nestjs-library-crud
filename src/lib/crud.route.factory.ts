@@ -160,9 +160,7 @@ export class CrudRouteFactory {
 
     private createMethod(crudMethod: Method): void {
         if (crudMethod === Method.RECOVER) {
-            const entityHasSoftDelete = this.entity.columns?.some(
-                (column) => (column.name === 'deleted_at' || column.name === 'deletedAt') && column.type === 'timestamp',
-            );
+            const entityHasSoftDelete = this.entity.columns?.some((column) => column.name === 'deleted_at' || column.name === 'deletedAt');
             if (!entityHasSoftDelete) {
                 return;
             }

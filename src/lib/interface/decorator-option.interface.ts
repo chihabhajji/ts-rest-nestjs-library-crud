@@ -127,7 +127,7 @@ export type DeleteRouteOption = AppRouteDeleteNoBody &
     };
 
 export type UpsertRouteOption = AppRouteMutation & RouteBaseOption & SaveOptions & WithAuthor;
-export type RecoverRouteOption = AppRouteMutation & RouteBaseOption & SaveOptions & WithAuthor;
+export type RecoverRouteOption = Omit<AppRouteMutation, 'method'> & { method: 'POST' } & RouteBaseOption & SaveOptions & WithAuthor;
 /**
  * See `crud.policy.ts` to check default values.
  */

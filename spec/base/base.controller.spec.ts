@@ -46,7 +46,6 @@ describe('BaseController', () => {
             'reservedRecover',
             'reservedSearch',
         ];
-
         expect(propertyNames).toHaveLength(expectedMethods.length);
         expect(propertyNames).toEqual(expect.arrayContaining(expectedMethods));
     });

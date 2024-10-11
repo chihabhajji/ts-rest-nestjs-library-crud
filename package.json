@@ -48,7 +48,7 @@
         "lint": "eslint .",
         "docker-compose-up:test": "docker-compose -f docker-compose.test.yml --env-file .env.test up -d",
         "docker-compose-down:test": "docker-compose -f docker-compose.test.yml --env-file .env.test down",
-        "test": "jest --runInBand --forceExit",
+        "test": "jest --runInBand --forceExit base/",
         "test:ci": "yarn docker-compose-up:test && yarn test && yarn docker-compose-down:test",
         "build": "rm -rf dist/* && tsc -p tsconfig.cjs.json && tsc -p tsconfig.mjs.json",
         "release": "release-it"
@@ -71,6 +71,7 @@
         "express": "^4.18.2",
         "lodash": "^4.17.21",
         "mongodb": "^6.9.0",
+        "mongodb-memory-server": "^10.1.2",
         "qs": "6.13.0",
         "reflect-metadata": "^0.2.1",
         "rxjs": "^7.8.1",
