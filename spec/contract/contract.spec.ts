@@ -1,6 +1,6 @@
 import { HttpStatus, type INestApplication } from '@nestjs/common';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Test } from '@nestjs/testing';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { TestHelper } from '../test.helper';
 import { contractClient } from './contract.client';
@@ -17,16 +17,10 @@ describe('ContractCreation', () => {
     let mongod: MongoMemoryServer;
 
     beforeAll(async () => {
-mongod = await MongoMemoryServer.create();
+        mongod = await MongoMemoryServer.create();
         const mongoUri = mongod.getUri();
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [
-                ContractTestModule,
-                TestHelper.getTypeOrmMongoModule(
-                    mongoUri,
-                    [ContractEntity],
-                ),
-            ],
+            imports: [ContractTestModule, TestHelper.getTypeOrmMongoModule(mongoUri, [ContractEntity])],
         }).compile();
         app = moduleFixture.createNestApplication<NestExpressApplication>();
         const crudService = app.get<ContractTestService>(ContractTestService);
@@ -87,9 +81,11 @@ mongod = await MongoMemoryServer.create();
                 offset: 0,
             },
         });
+
         expect(readManyStatus).toBe(HttpStatus.OK);
         if (readManyStatus === 200) {
             expect(readManyBody.data).toHaveLength(9);
+            expect(readManyBody.metadata.total).toEqual(9);
             expect(readManyBody.data).toEqual(expect.arrayContaining([createBody]));
             expect(readManyBody.data.at(0)).toEqual(createBody);
         }

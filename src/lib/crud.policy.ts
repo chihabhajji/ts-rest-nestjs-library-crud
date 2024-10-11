@@ -9,7 +9,7 @@ import { UpdateRequestInterceptor } from './interceptor/update-request.intercept
 import { UpsertRequestInterceptor } from './interceptor/upsert-request.interceptor';
 import { Method, Sort } from './interface';
 
-import type { CrudOptions, PrimaryKey, FactoryOption } from './interface';
+import type { CrudOptions, FactoryOption } from './interface';
 import type { NestInterceptor, Type } from '@nestjs/common';
 
 type CrudMethodPolicy = {

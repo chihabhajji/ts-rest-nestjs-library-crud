@@ -71,7 +71,7 @@ export const contractContract = c.router(
         },
 
         recover: {
-            method: 'PATCH',
+            method: 'POST',
             path: '/:_id/recover',
             responses: { 200: ContractNoBody },
             body: ContractNoBody,

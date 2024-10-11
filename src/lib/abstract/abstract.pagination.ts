@@ -53,7 +53,6 @@ export abstract class AbstractPaginationRequest {
         if (paginationQuery == null) {
             return false;
         }
-
         this._where = paginationQuery.where;
         this._total = paginationQuery.total;
         this._nextCursor = paginationQuery.nextCursor;

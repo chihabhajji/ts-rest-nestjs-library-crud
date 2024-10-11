@@ -32,20 +32,19 @@ export class CrudService<T extends EntityType> {
 
     readonly reservedReadMany = async (crudReadManyRequest: CrudReadManyRequest<T>): Promise<PaginationResponse<T>> => {
         crudReadManyRequest.excludedColumns(this.columnNames);
+        const findOptions = crudReadManyRequest.findOptions;
+        const pagination = crudReadManyRequest.pagination;
         const { entities, total } = await (async () => {
-            const findEntities = this.repository.find({ ...crudReadManyRequest.findOptions });
-
-            if (crudReadManyRequest.pagination.isNext) {
+            const findEntities = this.repository.find({ ...findOptions });
+            if (pagination.isNext) {
                 const entities = await findEntities;
-                return { entities, total: crudReadManyRequest.pagination.nextTotal() };
+                return { entities, total: pagination.nextTotal() };
             }
-            const [entities, total] = await Promise.all([
-                findEntities,
-                this.repository.count({
-                    where: crudReadManyRequest.findOptions.where,
-                    withDeleted: crudReadManyRequest.findOptions.withDeleted,
-                }),
-            ]);
+            const total = await this.repository.count({
+                where: Object.keys(findOptions.where).length > 0 ? findOptions.where : undefined,
+                withDeleted: this.columnNames.some((v) => v === 'deletedAt' || v === 'deleted_at') ? findOptions.withDeleted : undefined,
+            });
+            const entities = await findEntities;
             return { entities, total };
         })();
         return crudReadManyRequest.toResponse(entities, total);
@@ -57,8 +56,10 @@ export class CrudService<T extends EntityType> {
                 select: (crudReadOneRequest.selectColumns ?? this.columnNames).filter(
                     (columnName) => !crudReadOneRequest.excludedColumns?.includes(columnName),
                 ),
-                where: crudReadOneRequest.params as FindOptionsWhere<T>,
-                withDeleted: crudReadOneRequest.softDeleted,
+                where: Object.keys(crudReadOneRequest.params).length > 0 ? (crudReadOneRequest.params as FindOptionsWhere<T>) : undefined,
+                withDeleted: this.columnNames.some((v) => v === 'deletedAt' || v === 'deleted_at')
+                    ? crudReadOneRequest.softDeleted
+                    : undefined,
                 relations: crudReadOneRequest.relations,
             })
             .then((entity) => {

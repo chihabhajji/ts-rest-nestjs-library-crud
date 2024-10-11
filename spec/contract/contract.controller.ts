@@ -7,7 +7,7 @@ import { Crud } from '../../src';
 
 @Crud({
     entity: ContractEntity,
-    routes: contractContract,
+    routes: { ...contractContract, readMany: { ...contractContract.readMany, softDelete: false } },
 })
 @Controller()
 export class ContractTestController {

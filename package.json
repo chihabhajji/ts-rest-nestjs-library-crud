@@ -48,7 +48,7 @@
         "lint": "eslint .",
         "docker-compose-up:test": "docker-compose -f docker-compose.test.yml --env-file .env.test up -d",
         "docker-compose-down:test": "docker-compose -f docker-compose.test.yml --env-file .env.test down",
-        "test": "jest --runInBand --forceExit base/",
+        "test": "jest --runInBand --forceExit",
         "test:ci": "yarn docker-compose-up:test && yarn test && yarn docker-compose-down:test",
         "build": "rm -rf dist/* && tsc -p tsconfig.cjs.json && tsc -p tsconfig.mjs.json",
         "release": "release-it"
