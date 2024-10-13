@@ -9,11 +9,12 @@ import type { OffsetPaginationResponse } from '../interface/pagination.interface
 
 export function makeReadManyRoute<T extends EntityType>(
     contract: ReturnType<typeof initContract>,
-    options?: Omit<ReadManyRouteOption, 'method' | 'path' | 'responses'>,
+    options?: Partial<Omit<ReadManyRouteOption, 'method' | 'path' | 'responses' | 'query' | 'params'>>,
 ) {
     const opts = _.cloneDeep(options ?? {}) as ReadManyRouteOption;
 
     return {
+        description: 'Read many' as const,
         ...opts,
         query: contract.type<RequestReadManyDto<T>>(),
         path: '/',
@@ -22,7 +23,6 @@ export function makeReadManyRoute<T extends EntityType>(
             200: contract.type<OffsetPaginationResponse<T>>(),
             400: contract.type<{ message: string }>(),
         },
-        description: 'Read many' as const,
         params: ContractNoBody,
     } as const;
 }
