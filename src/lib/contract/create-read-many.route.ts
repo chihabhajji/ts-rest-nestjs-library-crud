@@ -22,7 +22,7 @@ export function makeReadManyRoute<T extends EntityType>(
             200: contract.type<OffsetPaginationResponse<T>>(),
             400: contract.type<{ message: string }>(),
         },
-        description: 'Read many',
+        description: 'Read many' as const,
         params: ContractNoBody,
     } as const;
 }
