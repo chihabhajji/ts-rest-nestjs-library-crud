@@ -9,10 +9,10 @@ import type { CrudSearchRequest } from 'src';
 import type { DeepPartial } from 'typeorm';
 
 const c = initContract();
-
+const readManyOptions = {} as const;
 export const contractContract = c.router(
     {
-        readMany: makeReadManyRoute<ContractEntity>(c),
+        readMany: makeReadManyRoute<ContractEntity, typeof readManyOptions>(c, readManyOptions),
         readOne: {
             method: 'GET',
             path: '/:_id',
