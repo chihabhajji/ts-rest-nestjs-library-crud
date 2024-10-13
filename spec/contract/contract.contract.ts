@@ -1,28 +1,18 @@
 import { ContractNoBody, initContract } from '@ts-rest/core';
 import { z } from 'zod';
 
-import type { ContractEntity } from './contract.entity';
+import { ContractEntity } from './contract.entity';
+import { makeReadManyRoute } from '../../src/lib/contract';
+
 import type { BaseEntity } from 'spec/base/base.entity';
 import type { CrudSearchRequest } from 'src';
-import type { PaginationOffsetRequestDto } from 'src/lib/dto';
 import type { DeepPartial } from 'typeorm';
 
 const c = initContract();
 
 export const contractContract = c.router(
     {
-        readMany: {
-            method: 'GET',
-            path: '/',
-            query: c.type<PaginationOffsetRequestDto>(),
-            responses: {
-                200: c.type<{
-                    data: ContractEntity[];
-                    metadata: { total: number; nextCursor: string; page: number; pages: number; offset: number };
-                }>(),
-                404: ContractNoBody,
-            },
-        },
+        readMany: makeReadManyRoute({}, c, ContractEntity),
         readOne: {
             method: 'GET',
             path: '/:_id',

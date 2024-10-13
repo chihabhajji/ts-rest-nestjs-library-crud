@@ -10,8 +10,9 @@ import { Method, Sort, GROUP } from '../interface';
 import { PaginationHelper } from '../provider';
 import { CrudReadManyRequest } from '../request';
 
+import type { ReadManyRouteOption } from '../contract';
 import type { CustomReadManyRequestOptions } from './custom-request.interceptor';
-import type { CrudOptions, FactoryOption, EntityType, ReadManyRouteOption } from '../interface';
+import type { CrudOptions, FactoryOption, EntityType } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { ClassConstructor } from 'class-transformer';
 import type { Request } from 'express';

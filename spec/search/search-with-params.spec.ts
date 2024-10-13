@@ -1,9 +1,11 @@
 import { Controller, Injectable, Module, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { ContractNoBody } from '@ts-rest/core';
 import { IsOptional } from 'class-validator';
 import request from 'supertest';
 import { Entity, BaseEntity, Repository, PrimaryColumn, Column, ObjectLiteral } from 'typeorm';
+import { z } from 'zod';
 
 import { Crud } from '../../src/lib/crud.decorator';
 import { CrudService } from '../../src/lib/crud.service';
@@ -36,8 +38,27 @@ class TestService extends CrudService<TestEntity> {
     }
 }
 
-@Crud({ entity: TestEntity })
-@Controller('base/:key')
+@Crud({
+    entity: TestEntity,
+    routes: {
+        search: {
+            numberOfTake: 5,
+            limitOfTake: 100,
+            method: 'POST',
+            path: '/base/search/:key',
+            body: ContractNoBody,
+            responses: { 200: ContractNoBody },
+        },
+        upsert: {
+            body: ContractNoBody,
+            path: '/base/:key',
+            pathParams: z.object({ key: z.string() }),
+            method: 'PATCH',
+            responses: { 201: ContractNoBody },
+        },
+    },
+})
+@Controller()
 class TestController implements CrudController<TestEntity> {
     constructor(public readonly crudService: TestService) {}
 }
@@ -61,7 +82,7 @@ describe('Search with params', () => {
 
         for (let i = 0; i < 10; i++) {
             await request(app.getHttpServer())
-                .post(`/base/key-${i}`)
+                .patch(`/base/:key-${i}`)
                 .send({
                     col1: i,
                     col2: [{ multiple2: i % 2 === 0, multiple4: i % 4 === 0 }],
@@ -77,7 +98,7 @@ describe('Search with params', () => {
     });
 
     it('should be search using params', async () => {
-        const { body } = await request(app.getHttpServer()).post('/base/key-1/search').send({}).expect(HttpStatus.OK);
+        const { body } = await request(app.getHttpServer()).patch('/base/key-1/search').send({}).expect(HttpStatus.OK);
         expect(body.data).toHaveLength(1);
         expect(body.data[0].key).toEqual('key-1');
     });

@@ -10,6 +10,7 @@ import {
     UseFilters,
 } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { ContractNoBody } from '@ts-rest/core';
 import { IsOptional, IsString } from 'class-validator';
 import { Response } from 'express';
 import { Entity, BaseEntity, Repository, PrimaryColumn, Column, Index } from 'typeorm';
@@ -56,10 +57,18 @@ export class TestService extends CrudService<TestEntity> {
 
 @Crud({
     entity: TestEntity,
-    only: ['create', 'readMany'],
     routes: {
         [Method.CREATE]: {
             decorators: [UseFilters(new HttpExceptionFilter('custom error message'))],
+            method: 'POST',
+            path: '/',
+            responses: { 201: ContractNoBody },
+            body: ContractNoBody,
+        },
+        [Method.READ_MANY]: {
+            method: 'GET',
+            path: '/',
+            responses: { 200: ContractNoBody },
         },
     },
 })

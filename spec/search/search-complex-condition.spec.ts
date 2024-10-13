@@ -1,6 +1,7 @@
 import { Controller, Injectable, Module, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { ContractNoBody } from '@ts-rest/core';
 import { IsOptional } from 'class-validator';
 import request from 'supertest';
 import { Entity, BaseEntity, Repository, PrimaryColumn, Column, ObjectLiteral } from 'typeorm';
@@ -32,8 +33,26 @@ class TestService extends CrudService<TestEntity> {
     }
 }
 
-@Crud({ entity: TestEntity })
-@Controller('base')
+@Crud({
+    entity: TestEntity,
+    routes: {
+        search: {
+            numberOfTake: 5,
+            limitOfTake: 100,
+            method: 'POST',
+            path: '/base/search',
+            body: ContractNoBody,
+            responses: { 200: ContractNoBody },
+        },
+        create: {
+            body: ContractNoBody,
+            path: '/base/create',
+            method: 'POST',
+            responses: { 201: ContractNoBody },
+        },
+    },
+})
+@Controller()
 class TestController implements CrudController<TestEntity> {
     constructor(public readonly crudService: TestService) {}
 }
@@ -57,7 +76,7 @@ describe('Search complex conditions', () => {
 
         for (let i = 0; i < 10; i++) {
             await request(app.getHttpServer())
-                .post('/base')
+                .post('/base/create')
                 .send({
                     col1: i,
                     col2: [{ multiple2: i % 2 === 0, multiple4: i % 4 === 0 }],

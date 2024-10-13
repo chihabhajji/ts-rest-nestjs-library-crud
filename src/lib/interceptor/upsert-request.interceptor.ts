@@ -7,11 +7,12 @@ import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS } from '../constants';
 import { GROUP, Method } from '../interface';
 
-import type { CrudOptions, CrudUpsertRequest, EntityType, FactoryOption, UpsertRouteOption } from '../interface';
+import type { CrudOptions, CrudUpsertRequest, EntityType, FactoryOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { ClassConstructor } from 'class-transformer';
 import type { Request } from 'express';
 import type { Observable } from 'rxjs';
+import type { UpsertRouteOption } from 'src';
 
 const method = Method.UPSERT;
 export function UpsertRequestInterceptor(crudOptions: CrudOptions, factoryOption: FactoryOption): Type<NestInterceptor> {

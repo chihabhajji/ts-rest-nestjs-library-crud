@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { UnprocessableEntityException } from '@nestjs/common';
+import { ContractNoBody, initContract } from '@ts-rest/core';
 import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseEntity } from 'typeorm';
@@ -30,12 +31,17 @@ describe('SearchRequestInterceptor', () => {
 
     let interceptor: InstanceType<ReturnType<typeof SearchRequestInterceptor>>;
     beforeAll(() => {
+        const c = initContract();
         const Interceptor = SearchRequestInterceptor(
             {
                 entity: TestEntity,
                 routes: {
                     search: {
                         limitOfTake: 100_000,
+                        method: 'POST',
+                        path: '/search',
+                        body: c.type<unknown>(),
+                        responses: { 200: ContractNoBody },
                     },
                 },
             },
@@ -312,9 +318,22 @@ describe('SearchRequestInterceptor', () => {
     describe('getRelations', () => {
         describe('return relations in custom options when it is array type', () => {
             let interceptor: InstanceType<ReturnType<typeof SearchRequestInterceptor>>;
+            const c = initContract();
             beforeAll(() => {
                 const Interceptor = SearchRequestInterceptor(
-                    { entity: {} as typeof BaseEntity, routes: { search: { relations: ['route'] } } },
+                    {
+                        entity: {} as typeof BaseEntity,
+                        routes: {
+                            search: {
+                                limitOfTake: 100_000,
+                                method: 'POST',
+                                path: '/search',
+                                body: c.type<unknown>(),
+                                responses: { 200: ContractNoBody },
+                                relations: ['route'],
+                            },
+                        },
+                    },
                     { relations: ['factory'], logger: new CrudLogger(), primaryKeys: [] },
                 );
                 interceptor = new Interceptor();
@@ -351,8 +370,14 @@ describe('SearchRequestInterceptor', () => {
             });
 
             it('relations is not defined in search route option', () => {
+                const c = initContract();
                 const Interceptor = SearchRequestInterceptor(
-                    { entity: {} as typeof BaseEntity, routes: { search: {} } },
+                    {
+                        entity: {} as typeof BaseEntity,
+                        routes: {
+                            search: { responses: { 200: c.type<unknown>() }, method: 'POST', path: '/search', body: c.type<unknown>() },
+                        },
+                    },
                     { relations: ['factory'], logger: new CrudLogger(), primaryKeys: [] },
                 );
                 const interceptor = new Interceptor();
@@ -362,8 +387,20 @@ describe('SearchRequestInterceptor', () => {
         });
 
         it('return empty array when relations in search route is false', () => {
+            const c = initContract();
             const Interceptor = SearchRequestInterceptor(
-                { entity: {} as typeof BaseEntity, routes: { search: { relations: false } } },
+                {
+                    entity: {} as typeof BaseEntity,
+                    routes: {
+                        search: {
+                            relations: false,
+                            responses: { 200: c.type<unknown>() },
+                            method: 'POST',
+                            path: '/search',
+                            body: c.type<unknown>(),
+                        },
+                    },
+                },
                 { relations: ['factory'], logger: new CrudLogger(), primaryKeys: [] },
             );
             const interceptor = new Interceptor();
@@ -373,8 +410,21 @@ describe('SearchRequestInterceptor', () => {
 
         describe('return relations in search route option when it is array type', () => {
             it('routes.search.relations(["route"])', () => {
+                const c = initContract();
                 const Interceptor = SearchRequestInterceptor(
-                    { entity: {} as typeof BaseEntity, routes: { search: { relations: ['route'] } } },
+                    {
+                        entity: {} as typeof BaseEntity,
+                        routes: {
+                            search: {
+                                relations: ['route'],
+
+                                responses: { 200: c.type<unknown>() },
+                                method: 'POST',
+                                path: '/search',
+                                body: c.type<unknown>(),
+                            },
+                        },
+                    },
                     { relations: ['factory'], logger: new CrudLogger(), primaryKeys: [] },
                 );
                 const interceptor = new Interceptor();
@@ -383,8 +433,21 @@ describe('SearchRequestInterceptor', () => {
             });
 
             test.each([undefined, null, 'route', {}])('routes.search.relations(%p)', (routeRelations) => {
+                const c = initContract();
                 const Interceptor = SearchRequestInterceptor(
-                    { entity: {} as typeof BaseEntity, routes: { search: { relations: routeRelations as string[] } } },
+                    {
+                        entity: {} as typeof BaseEntity,
+                        routes: {
+                            search: {
+                                responses: { 200: c.type<unknown>() },
+                                method: 'POST',
+                                path: '/search',
+                                body: c.type<unknown>(),
+
+                                relations: routeRelations as string[],
+                            },
+                        },
+                    },
                     { relations: ['factory'], logger: new CrudLogger(), primaryKeys: [] },
                 );
                 interceptor = new Interceptor();

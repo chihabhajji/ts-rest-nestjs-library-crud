@@ -1,5 +1,6 @@
 import { ConsoleLogger, HttpStatus } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { initContract } from '@ts-rest/core';
 import request from 'supertest';
 
 import { PaginationModule } from './pagination.module';
@@ -8,6 +9,7 @@ import { TestHelper } from '../test.helper';
 
 import type { INestApplication } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
+import type { ContractNoBodyType } from '@ts-rest/core';
 
 describe('Pagination', () => {
     let app: INestApplication;
@@ -18,11 +20,18 @@ describe('Pagination', () => {
     beforeAll(async () => {
         const logger = new ConsoleLogger();
         logger.setLogLevels(['error']);
+        const c = initContract();
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 PaginationModule({
-                    readMany: { numberOfTake: defaultLimit },
-                    search: { limitOfTake: totalCount },
+                    readMany: { numberOfTake: defaultLimit, path: '/', method: 'GET', responses: { 200: c.type<ContractNoBodyType>() } },
+                    search: {
+                        limitOfTake: totalCount,
+                        path: '/search',
+                        method: 'POST',
+                        responses: { 200: c.type<ContractNoBodyType>() },
+                        body: c.type<unknown>(),
+                    },
                 }),
             ],
         })

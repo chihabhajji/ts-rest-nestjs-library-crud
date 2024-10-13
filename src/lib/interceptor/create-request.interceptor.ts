@@ -6,11 +6,12 @@ import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS } from '../constants';
 import { GROUP, Method } from '../interface';
 
-import type { CrudOptions, FactoryOption, CrudCreateRequest, EntityType, CreateRouteOption } from '../interface';
+import type { CrudOptions, FactoryOption, CrudCreateRequest, EntityType } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { ClassConstructor } from 'class-transformer';
 import type { Request } from 'express';
 import type { Observable } from 'rxjs';
+import type { CreateRouteOption } from 'src';
 import type { DeepPartial } from 'typeorm';
 
 interface NestedBaseEntityArray extends Array<NestedBaseEntityArray | DeepPartial<EntityType>> {}

@@ -7,11 +7,12 @@ import { RequestAbstractInterceptor } from '../abstract';
 import { CRUD_ROUTE_ARGS } from '../constants';
 import { GROUP, Method } from '../interface';
 
-import type { CrudOptions, CrudUpdateOneRequest, EntityType, FactoryOption, UpdateRouteOption } from '../interface';
+import type { CrudOptions, CrudUpdateOneRequest, EntityType, FactoryOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { ClassConstructor } from 'class-transformer';
 import type { Request } from 'express';
 import type { Observable } from 'rxjs';
+import type { UpdateRouteOption } from 'src';
 
 const method = Method.UPDATE;
 export function UpdateRequestInterceptor(crudOptions: CrudOptions, factoryOption: FactoryOption): Type<NestInterceptor> {

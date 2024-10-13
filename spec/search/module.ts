@@ -1,5 +1,6 @@
 import { Controller, Injectable, Module } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { ContractNoBody } from '@ts-rest/core';
 import { IsOptional } from 'class-validator';
 import { Entity, BaseEntity, PrimaryColumn, Column } from 'typeorm';
 
@@ -42,11 +43,15 @@ export class TestService extends CrudService<TestEntity> {
         search: {
             numberOfTake: 5,
             limitOfTake: 100,
+            method: 'POST',
+            path: '/base/search',
+            body: ContractNoBody,
+            responses: { 200: ContractNoBody },
         },
     },
     logging: true,
 })
-@Controller('base')
+@Controller()
 export class TestController implements CrudController<TestEntity> {
     constructor(public readonly crudService: TestService) {}
 }

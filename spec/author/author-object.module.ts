@@ -60,6 +60,8 @@ export class TestService extends CrudService<TestEntity> {
                 filter: 'user',
                 property: 'createdBy',
             },
+            method: 'POST',
+            path: '/base',
         },
         update: {
             interceptors: [AuthorInterceptor],

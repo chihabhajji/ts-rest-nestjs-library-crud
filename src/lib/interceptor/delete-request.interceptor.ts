@@ -6,8 +6,9 @@ import { CRUD_ROUTE_ARGS, CUSTOM_REQUEST_OPTIONS } from '../constants';
 import { CRUD_POLICY } from '../crud.policy';
 import { Method } from '../interface';
 
+import type { DeleteRouteOption } from '../contract';
 import type { CustomDeleteRequestOptions } from './custom-request.interceptor';
-import type { CrudDeleteOneRequest, CrudOptions, DeleteRouteOption, FactoryOption } from '../interface';
+import type { CrudDeleteOneRequest, CrudOptions, FactoryOption } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { Request } from 'express';
 import type { Observable } from 'rxjs';

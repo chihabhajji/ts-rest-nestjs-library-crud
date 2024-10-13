@@ -10,11 +10,12 @@ import { RequestFieldsDto } from '../dto/request-fields.dto';
 import { Method } from '../interface';
 
 import type { CustomReadOneRequestOptions } from './custom-request.interceptor';
-import type { CrudOptions, FactoryOption, CrudReadOneRequest, ReadOneRouteOption } from '../interface';
+import type { CrudOptions, FactoryOption, CrudReadOneRequest } from '../interface';
 import type { CallHandler, ExecutionContext, NestInterceptor, Type } from '@nestjs/common';
 import type { Request } from 'express';
 import type QueryString from 'qs';
 import type { Observable } from 'rxjs';
+import type { ReadOneRouteOption } from 'src';
 
 const method = Method.READ_ONE;
 export function ReadOneRequestInterceptor(crudOptions: CrudOptions, factoryOption: FactoryOption): Type<NestInterceptor> {

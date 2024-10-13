@@ -13,8 +13,9 @@ import { operatorBetween, operatorIn, operatorNull, operatorList } from '../inte
 import { PaginationHelper, TypeOrmQueryBuilderHelper } from '../provider';
 import { CrudReadManyRequest } from '../request';
 
+import type { SearchRouteOption } from '../contract';
 import type { CustomSearchRequestOptions } from './custom-request.interceptor';
-import type { CrudOptions, EntityType, FactoryOption, SearchRouteOption } from '../interface';
+import type { CrudOptions, EntityType, FactoryOption } from '../interface';
 import type { OperatorUnion } from '../interface/query-operation.interface';
 import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import type { Request } from 'express';
