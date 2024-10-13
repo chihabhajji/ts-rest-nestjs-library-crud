@@ -9,7 +9,12 @@ export function makeReadManyRoute<T extends EntityType>(
     options: Omit<ReadManyRouteOption, 'method' | 'path' | 'responses'>,
     contract: ReturnType<typeof initContract>,
     entity: T,
-): ReadManyRouteOption {
+): ReadManyRouteOption & {
+    path: '/';
+    method: 'GET';
+    query: ContractPlainType<PaginationOffsetDto>;
+    responses: { 200: OffsetPaginationResponse<typeof entity>; 400: { message: string } };
+} {
     const opts = _.cloneDeep(options) as ReadManyRouteOption;
     opts.path = '/';
     opts.method = 'GET';
