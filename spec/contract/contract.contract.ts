@@ -1,9 +1,9 @@
 import { ContractNoBody, initContract } from '@ts-rest/core';
 import { z } from 'zod';
 
-import { ContractEntity } from './contract.entity';
 import { makeReadManyRoute } from '../../src/lib/contract';
 
+import type { ContractEntity } from './contract.entity';
 import type { BaseEntity } from 'spec/base/base.entity';
 import type { CrudSearchRequest } from 'src';
 import type { DeepPartial } from 'typeorm';
@@ -12,7 +12,7 @@ const c = initContract();
 
 export const contractContract = c.router(
     {
-        readMany: makeReadManyRoute({}, c, ContractEntity),
+        readMany: makeReadManyRoute<ContractEntity>(c),
         readOne: {
             method: 'GET',
             path: '/:_id',

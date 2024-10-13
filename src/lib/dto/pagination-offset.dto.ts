@@ -3,7 +3,6 @@ import { IsNumber, IsOptional } from 'class-validator';
 
 import { AbstractPaginationRequest } from '../abstract';
 import { OffsetPaginationResponse } from '../interface';
-import { NonFunctionProperties } from './read-many-request.dto';
 
 export class PaginationOffsetDto extends AbstractPaginationRequest {
     @Expose({ name: 'limit' })
@@ -34,5 +33,3 @@ export class PaginationOffsetDto extends AbstractPaginationRequest {
         };
     }
 }
-
-export type PaginationOffsetRequestDto = Omit<NonFunctionProperties<PaginationOffsetDto>, 'query' | 'where' | 'isNext' | 'nextCursor'>;

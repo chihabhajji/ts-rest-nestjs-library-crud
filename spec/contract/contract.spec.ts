@@ -76,6 +76,8 @@ describe('ContractCreation', () => {
 
         const createBody = createResponse as ContractEntity;
         const { body: readManyBody, status: readManyStatus } = await contractClient.readMany({
+            headers: {},
+            params: {},
             query: {
                 limit: 10,
                 offset: 0,
